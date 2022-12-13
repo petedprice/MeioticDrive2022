@@ -2,7 +2,6 @@
 args = commandArgs(trailingOnly=TRUE)
 
 ###LIBRARIES ----
-library(SingleCellExperiment)
 library(Seurat)
 library(tidyverse)
 library(Matrix)
