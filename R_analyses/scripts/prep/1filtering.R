@@ -10,7 +10,6 @@ library(cowplot)
 library(RCurl)
 library(stringr)
 library(ggpubr)
-library(DropletUtils)
 
 ##### Data and custom scripts ----
 path_to_MD2022 <- args[1]
