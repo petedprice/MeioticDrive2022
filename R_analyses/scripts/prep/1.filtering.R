@@ -1,6 +1,4 @@
 #!/usr/bin/env Rscript
-#args = commandArgs(trailingOnly=TRUE)
-#!/usr/bin/env Rscript
 library("optparse")
 option_list = list(
   make_option(c("-m", "--path_to_MD2022"), type="character", default=NULL, 
@@ -12,6 +10,8 @@ option_list = list(
 )
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
+
+print(opt[1])
 
 if (is.null(opt$file)){
   print_help(opt_parser)
