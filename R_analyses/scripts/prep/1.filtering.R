@@ -1,13 +1,13 @@
 #!/usr/bin/env Rscript
-args = commandArgs(trailingOnly=TRUE)
+#args = commandArgs(trailingOnly=TRUE)
 #!/usr/bin/env Rscript
 library("optparse")
 option_list = list(
   make_option(c("-m", "--path_to_MD2022"), type="character", default=NULL, 
               help="path to where you have the MD202022 github stored", metavar="character"),
-  make_option(c("-d", "--datapath"), type="character", default="out.txt", 
+  make_option(c("-d", "--datapath"), type="character", default=NULL, 
               help="path to where you have stored your cellranger data", metavar="character"),
-  make_option(c("-o", "--output_path"), type="character", default="out.txt", 
+  make_option(c("-o", "--output_path"), type="character", default=".", 
               help="where you want to save your output plots and RData files", metavar="character")
 )
 opt_parser = OptionParser(option_list=option_list)
@@ -15,7 +15,7 @@ opt = parse_args(opt_parser)
 
 if (is.null(opt$file)){
   print_help(opt_parser)
-  stop("At least one argument must be supplied (input file).n", call.=FALSE)
+  stop("At least one argument must be supplied (input file)", call.=FALSE)
 }
 
 ###LIBRARIES ----
