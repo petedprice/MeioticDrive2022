@@ -18,7 +18,7 @@ datapath = args[2]
 output_path = args[3]
 
 files <- list.files(datapath, pattern = "stalkie_dros")
-source("scripts/Bits_and_bobs/Usefull_functions.R")
+#source("scripts/Bits_and_bobs/Usefull_functions.R")
 source(paste(path_to_MD2022, "/R_analyses/scripts/Bits_and_bobs/Usefull_functions.R", sep = ""))
 
 #filtering thresholds 
