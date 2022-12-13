@@ -67,13 +67,14 @@ filtered_seurat <- subset(x = merged_seurat,
                             (mitoRatio < 0.05))
 metadata_clean <- filtered_seurat@meta.data
 
-plotpath = paste(output_path, "/plots", sep = "")
-dir.create(plotpath, showWarnings = F)
-
 outdatapath = paste(output_path, "/outdata", sep = "")
-dir.create(outdatapath, showWarnings = F)
+dir.create(outdatapath, showWarnings = F, recursive = T)
+save(filtered_seurat, metadata_clean, paste(outdatapath, "/filtered_seurat.RData", sep = ""))
 
+plotpath = paste(output_path, "/plots", sep = "")
+dir.create(plotpath, showWarnings = T, recursive = T)
 make_plots_function(metadata_clean, plotpath = plotpath)
-save(filtered_seurat, metadata_clean, outdatapath)
+
+
 
 
