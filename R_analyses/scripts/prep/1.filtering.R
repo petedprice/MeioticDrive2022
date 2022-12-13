@@ -9,9 +9,9 @@ option_list = list(
               help="path to where you have stored your cellranger data", metavar="character"),
   make_option(c("-o", "--output_path"), type="character", default="out.txt", 
               help="where you want to save your output plots and RData files", metavar="character")
-);
-opt_parser = OptionParser(option_list=option_list);
-opt = parse_args(opt_parser);
+)
+opt_parser = OptionParser(option_list=option_list)
+opt = parse_args(opt_parser)
 
 if (is.null(opt$file)){
   print_help(opt_parser)
