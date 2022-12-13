@@ -14,7 +14,7 @@ library(ggpubr)
 ##### Data and custom scripts ----
 path_to_MD2022 <- args[1]
 #datapath = paste("indata/cellranger/filtered", sep = "")
-datapth = args[2]
+datapath = args[2]
 output_path = args[3]
 
 files <- list.files(datapath, pattern = "stalkie_dros")
