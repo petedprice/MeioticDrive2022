@@ -1,16 +1,15 @@
 #!/usr/bin/env Rscript
 library("optparse")
 option_list = list(
-  make_option(c("-m", "--path_to_MD2022"), type="character", default=NULL, 
+  make_option(c("-m", "--path_to_MD2022"), type="character", default=".", 
               help="path to where you have the MD202022 github stored", metavar="character"),
-  make_option(c("-d", "--datapath"), type="character", default=NULL, 
+  make_option(c("-d", "--datapath"), type="character", default=".", 
               help="path to where you have stored your cellranger data", metavar="character"),
   make_option(c("-o", "--output_path"), type="character", default=".", 
               help="where you want to save your output plots and RData files", metavar="character")
 )
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
-print(opt[1])
 
 if (is.null(opt$datapath)){
   print_help(opt_parser)
@@ -28,9 +27,9 @@ library(stringr)
 library(ggpubr)
 
 ##### Data and custom scripts ----
-path_to_MD2022 <- opt[1]
+path_to_MD2022 <- opt$datapath
 #datapath = paste("indata/cellranger/filtered", sep = "")
-datapath = opt[2]
+datapath = opt$output_path
 output_path = opt[3]
 
 files <- list.files(datapath, pattern = "stalkie_dros")
