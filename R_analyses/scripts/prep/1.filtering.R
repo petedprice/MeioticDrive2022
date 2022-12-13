@@ -1,5 +1,22 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
+#!/usr/bin/env Rscript
+library("optparse")
+option_list = list(
+  make_option(c("-m", "--path_to_MD2022"), type="character", default=NULL, 
+              help="path to where you have the MD202022 github stored", metavar="character"),
+  make_option(c("-d", "--datapath"), type="character", default="out.txt", 
+              help="path to where you have stored your cellranger data", metavar="character"),
+  make_option(c("-o", "--output_path"), type="character", default="out.txt", 
+              help="where you want to save your output plots and RData files", metavar="character")
+);
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
+
+if (is.null(opt$file)){
+  print_help(opt_parser)
+  stop("At least one argument must be supplied (input file).n", call.=FALSE)
+}
 
 ###LIBRARIES ----
 library(Seurat)
@@ -12,10 +29,10 @@ library(stringr)
 library(ggpubr)
 
 ##### Data and custom scripts ----
-path_to_MD2022 <- args[1]
+path_to_MD2022 <- opt[1]
 #datapath = paste("indata/cellranger/filtered", sep = "")
-datapath = args[2]
-output_path = args[3]
+datapath = opt[2]
+output_path = opt[3]
 
 files <- list.files(datapath, pattern = "stalkie_dros")
 #source("scripts/Bits_and_bobs/Usefull_functions.R")
@@ -68,11 +85,11 @@ filtered_seurat <- subset(x = merged_seurat,
 metadata_clean <- filtered_seurat@meta.data
 
 outdatapath = paste(output_path, "/outdata", sep = "")
-dir.create(outdatapath, showWarnings = T, recursive = T)
+dir.create(outdatapath, showWarnings = F, recursive = T)
 save(filtered_seurat, metadata_clean, file = paste(outdatapath, "/filtered_seurat.RData", sep = ""))
 
 plotpath = paste(output_path, "/plots", sep = "")
-dir.create(plotpath, showWarnings = T, recursive = T)
+dir.create(plotpath, showWarnings = F, recursive = T)
 make_plots_function(metadata_clean, plotpath = plotpath)
 
 
