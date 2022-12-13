@@ -34,14 +34,15 @@ blastn -evalue 1e-10 \
 	-db $1 \
 	-query $2 \
 	-out ${dir1}/${seq1}.${seq2}.bla \
-        -outfmt '6'
+        -outfmt '6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore sseq'
 
 echo "running blast two"
+
 
 blastn -evalue 1e-10 \
         -task blastn \
         -db $2 \
         -query $1 \
         -out ${dir1}/${seq2}.${seq1}.bla \
-        -outfmt '6'
+        -outfmt '6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore sseq'
 
