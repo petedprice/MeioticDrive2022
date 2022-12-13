@@ -27,10 +27,10 @@ library(stringr)
 library(ggpubr)
 
 ##### Data and custom scripts ----
-path_to_MD2022 <- opt$datapath
+path_to_MD2022 <- opt$path_to_MD2022
 #datapath = paste("indata/cellranger/filtered", sep = "")
-datapath = opt$output_path
-output_path = opt[3]
+datapath = opt$datapath
+output_path = opt$output_path
 
 files <- list.files(datapath, pattern = "stalkie_dros")
 #source("scripts/Bits_and_bobs/Usefull_functions.R")
