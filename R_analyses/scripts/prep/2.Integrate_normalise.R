@@ -1,3 +1,6 @@
+#!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
+
 ###LIBRARIES ----
 library(Seurat)
 library(tidyverse)
@@ -9,13 +12,12 @@ library(stringr)
 library(ggpubr)
 
 #Load data
-load("outdata/RData/filtered_seurat.RData")
-
-                            
-
+#load("outdata/RData/filtered_seurat.RData")
+load(args[1]) # path to filtered seurat RData
+                          
 # split object into a list by sample
 split_seurat <- SplitObject(filtered_seurat, split.by = "sample")
-#split_seurat <- split_seurat[c(1,2,3,7)]
+
 #normalise data
 split_seurat <- lapply(split_seurat, NormalizeData, verbose = TRUE)
 

@@ -68,8 +68,8 @@ filtered_seurat <- subset(x = merged_seurat,
 metadata_clean <- filtered_seurat@meta.data
 
 outdatapath = paste(output_path, "/outdata", sep = "")
-dir.create(outdatapath, showWarnings = F, recursive = T)
-save(filtered_seurat, metadata_clean, paste(outdatapath, "/filtered_seurat.RData", sep = ""))
+dir.create(outdatapath, showWarnings = T, recursive = T)
+save(filtered_seurat, metadata_clean, file = paste(outdatapath, "/filtered_seurat.RData", sep = ""))
 
 plotpath = paste(output_path, "/plots", sep = "")
 dir.create(plotpath, showWarnings = T, recursive = T)
