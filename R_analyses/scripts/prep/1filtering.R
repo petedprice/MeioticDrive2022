@@ -1,3 +1,6 @@
+#!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
+
 ###LIBRARIES ----
 library(SingleCellExperiment)
 library(Seurat)
@@ -11,9 +14,14 @@ library(ggpubr)
 library(DropletUtils)
 
 ##### Data and custom scripts ----
+path_to_MD2022 <- args[1]
 datapath = paste("indata/cellranger/", filt, sep = "")
+datapth = args[2]
+output_path = args[3]
+
 files <- list.files(datapath, pattern = "stalkie_dros")
 source("scripts/Bits_and_bobs/Usefull_functions.R")
+source(paste(path_to_MD2022, "/R_analyses/scripts/Bits_and_bobs/Usefull_functions.R", sep = ""))
 
 #filtering thresholds 
 filt = "filtered"
@@ -60,7 +68,14 @@ filtered_seurat <- subset(x = merged_seurat,
                             #(log10GenesPerUMI > 0) & # Can be dying cells or simple cell types such as blood cells
                             (mitoRatio < 0.05))
 metadata_clean <- filtered_seurat@meta.data
-make_plots_function(metadata_clean, plotpath = "plots/")
-save(filtered_seurat, metadata_clean, "outdata/RData/filtered_seurat.RData")
+
+plotpath = paste(output_path, "/plots", sep = "")
+dir.create(plotpath, showWarnings = F)
+
+outdatapath = paste(output_path, "/outdata", sep = "")
+dir.create(outdatapath, showWarnings = F)
+
+make_plots_function(metadata_clean, plotpath = plotpath)
+save(filtered_seurat, metadata_clean, outdatapath)
 
 
