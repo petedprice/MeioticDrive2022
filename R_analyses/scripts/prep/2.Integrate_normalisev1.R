@@ -17,11 +17,6 @@ if (is.null(opt$datapath)){
   stop("At least one argument must be supplied (input file)", call.=FALSE)
 }
 
-outdatapath = paste(output_path, "/outdata", sep = "")
-dir.create(outdatapath, showWarnings = F, recursive = T)
-plotpath = paste(output_path, "/plots/", sep = "")
-dir.create(plotpath, showWarnings = F, recursive = T)
-
 ###LIBRARIES ----
 library(Seurat)
 library(tidyverse)
@@ -34,54 +29,40 @@ library(ggpubr)
 
 #Load data
 load(opt$path_to_seurat_object) # path to filtered seurat RData
-
-#Initial plot making for comparisons to before integration 
-filtered_seurat <- RunPCA(object = filtered_seurat)
-fs_PCA1 <- PCAPlot(filtered_seurat,
-                  split.by = "sample")
-ggsave(filename = paste(plotpath, "fs_sample_PCA.pdf", sep = ""))
-fs_PCA2 <- PCAPlot(filtered_seurat,
-                  split.by = "treatment")
-ggsave(filename = paste(plotpath, "fs_treatment_PCA.pdf", sep = ""))
-
-
-  
+                          
 # split object into a list by sample
 split_seurat <- SplitObject(filtered_seurat, split.by = "sample")
 
-
-
-#SCT normalise the data
+#SCT daata
 split_seurat <- lapply(split_seurat, SCTransform, vars.to.regress = 'mitoRatio') #may potentially have to regress out cell cycle 
 
 #prep data for integration 
-# Identify variable features for integrating
-features <- SelectIntegrationFeatures(object.list = split_seurat, nfeatures = 3000)
-
-#Preprosssesing step neccesary if SCT transformed
+features <- SelectIntegrationFeatures(object.list = split_seurat)
+split_seurat <- lapply(split_seurat, FindVariableFeatures, 
+                       selection.method = "vst", nfeatures = 2000)
 split_seurat <- PrepSCTIntegration(object.list = split_seurat, 
                                    anchor.features = features)
-
-
-
-#Find anchors that link datasets
 anchors <- FindIntegrationAnchors(object.list = split_seurat, 
                                   anchor.features = features, 
                                   normalization.method = "SCT")
 
+
 #Integrate data 
 seurat_integrated <- IntegrateData(anchorset = anchors, 
                                    normalization.method = "SCT")
+save(seurat_integrated, file = "outdata/RData/integrated_seurat.RData")
+load("outdata/RData/integrated_seurat.RData")
+seurat_integrated <- FindVariableFeatures(seurat_integrated, 
+                                          selection.method = "vst",
+                                          nfeatures = 2000, 
+                                          verbose = FALSE)
 
-#Save data
-save(split_seurat, seurat_integrated, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))
+seurat_integrated <- ScaleData(seurat_integrated)
 
-#PCAS/UMAPS/ETC?ETC
 seurat_integrated <- RunPCA(object = seurat_integrated)
 seurat_integrated <- RunUMAP(seurat_integrated, 
-                             dims = 1:30,
+                             dims = 1:40,
                              reduction = "pca")
-
 seurat_integrated <- FindNeighbors(object = seurat_integrated, 
                                    dims = 1:40)
 seurat_integrated <- FindClusters(object = seurat_integrated,
