@@ -89,9 +89,5 @@ plot_func <- function(cluster, mk_df = markers){
   }
   dev.off()
 }
-
-
-
-
-
+lapply(unique(markers$Cluster), plot_func, mk_df = markers)
 
