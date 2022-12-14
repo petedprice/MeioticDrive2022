@@ -41,25 +41,10 @@ plotpath = paste(output_path, "/plots/", sep = "")
 dir.create(plotpath, showWarnings = F, recursive = T)
 
 #parallelise
-plan("multiprocess", workers = opt$threads)
+plan("multicore", workers = opt$threads)
 
-
-
-#Initial plot making for comparisons to before integration 
-filtered_seurat <- RunPCA(object = filtered_seurat)
-fs_PCA1 <- PCAPlot(filtered_seurat,
-                  split.by = "sample")
-ggsave(filename = paste(plotpath, "fs_sample_PCA.pdf", sep = ""))
-fs_PCA2 <- PCAPlot(filtered_seurat,
-                  split.by = "treatment")
-ggsave(filename = paste(plotpath, "fs_treatment_PCA.pdf", sep = ""))
-
-
-  
 # split object into a list by sample
 split_seurat <- SplitObject(filtered_seurat, split.by = "sample")
-
-
 
 #SCT normalise the data
 split_seurat <- lapply(split_seurat, SCTransform, vars.to.regress = 'mitoRatio') #may potentially have to regress out cell cycle 
@@ -73,11 +58,24 @@ split_seurat <- PrepSCTIntegration(object.list = split_seurat,
                                    anchor.features = features)
 
 
-
 #Find anchors that link datasets
 anchors <- FindIntegrationAnchors(object.list = split_seurat, 
                                   anchor.features = features, 
                                   normalization.method = "SCT")
+
+#Initial plot making for comparisons to before integration 
+
+
+# Perform PCA
+split_filtered <- Reduce(merge, split_seurat)
+split_filtered <- RunPCA(object = split_filtered, features = features)
+fs_PCA1 <- PCAPlot(split_filtered,
+                   split.by = "sample")
+ggsave(filename = paste(plotpath, "fs_sample_PCA.pdf", sep = ""))
+fs_PCA2 <- PCAPlot(split_filtered,
+                   split.by = "treatment")
+ggsave(filename = paste(plotpath, "fs_treatment_PCA.pdf", sep = ""))
+
 
 #Integrate data 
 seurat_integrated <- IntegrateData(anchorset = anchors, 
