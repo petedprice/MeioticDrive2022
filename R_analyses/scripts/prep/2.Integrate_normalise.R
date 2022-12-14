@@ -51,7 +51,8 @@ options(future.globals.maxSize = 8000 * 1024^5)
 # split object into a list by sample
 split_seurat <- SplitObject(filtered_seurat, split.by = "sample")
 
-if (opt$samples != all){
+if (opt$samples != 'all'){
+  print("sample removing")
   keep_samples <- read.table(opt$samples)[,1]
   split_seurat <- split_seurat[keep_samples]
 }
