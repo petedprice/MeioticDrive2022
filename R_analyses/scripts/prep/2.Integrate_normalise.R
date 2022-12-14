@@ -9,13 +9,12 @@ option_list = list(
               help="where you want to save your output plots and RData files", metavar="character"),
   make_option(c("-t", "--threads"), type="numeric", default=1, 
               help="number of threads for parallelising", metavar="numeric"),
-  make_option(c("-s", "--samples"), type="character", default=".", 
+  make_option(c("-s", "--samples"), type="character", default="all", 
               help="path to dataframe containing samples (see format on github)", metavar="character")
   
 )
 
-keep_samples <- read.table("work/samples.txt")
-c(keep_samples)
+
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
 
@@ -47,13 +46,18 @@ dir.create(plotpath, showWarnings = F, recursive = T)
 
 #parallelise
 plan("multicore", workers = opt$threads)
-options(future.globals.maxSize = 8000 * 1024^3)
+options(future.globals.maxSize = 8000 * 1024^5)
 
 # split object into a list by sample
 split_seurat <- SplitObject(filtered_seurat, split.by = "sample")
 
-#SCT normalise the data
+if (opt$samples != all){
+  keep_samples <- read.table(opt$samples)[,1]
+  split_seurat <- split_seurat[keep_samples]
+}
+
 split_seurat <- lapply(split_seurat, SCTransform, vars.to.regress = 'mitoRatio') #may potentially have to regress out cell cycle 
+#SCT normalise the data
 
 #prep data for integration 
 # Identify variable features for integrating
