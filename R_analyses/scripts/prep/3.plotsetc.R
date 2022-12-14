@@ -76,7 +76,7 @@ DefaultAssay(seurat_integrated) <- "RNA"
 
 
 
-
+dev.off()
 plot_func <- function(cluster, mk_df = markers){
   print(cluster)
   mks <- filter(mk_df, Cluster == cluster)
@@ -85,9 +85,17 @@ plot_func <- function(cluster, mk_df = markers){
   plots <- lapply(mks2, FeaturePlot, object = seurat_integrated, min.cutoff = "q10")  
   pdf(paste(plotpath, cluster, "_feature_plot.pdf", sep = ""))
   for (p in plots){
-    p
+    plot(p)
   }
   dev.off()
 }
 lapply(unique(markers$Cluster), plot_func, mk_df = markers)
 
+
+#plots <- lapply(features[1:9], FeaturePlot, object = seurat_integrated, min.cutoff = "q10")  
+
+#pdf("del.pdf")
+#for (p in plots){
+#  plot(p)
+#}
+#dev.off()
