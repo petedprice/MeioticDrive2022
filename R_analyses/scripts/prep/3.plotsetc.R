@@ -76,7 +76,6 @@ DefaultAssay(seurat_integrated) <- "RNA"
 
 
 
-dev.off()
 plot_func <- function(cluster, mk_df = markers){
   print(cluster)
   mks <- filter(mk_df, Cluster == cluster)
