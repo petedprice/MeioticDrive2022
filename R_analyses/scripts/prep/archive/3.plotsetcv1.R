@@ -9,7 +9,7 @@ option_list = list(
               help="where you want to save your output plots and RData files", metavar="character"),
   make_option(c("-t", "--threads"), type="numeric", default=1, 
               help="number of threads for parallelising", metavar="numeric"),
-  make_option(c("-u", "--orthologs"), type="character", default=NA, 
+  make_option(c("-u", "--orthologs"), type="character", default=, 
               help="path to orthologs RData", metavar="character")
   
 )
@@ -38,7 +38,7 @@ library(future.apply)
 #Load data and parsing commands
 output_path <- opt$output_path
 load(opt$path_to_integrated_seurat_object) # path to filtered seurat RData
-load(opt$orthologs)
+load("outdata/RData/orthologs.RData")
 markers <- filter(orthologs_testis, is.na(Cluster) == FALSE) %>% 
   filter(sub("^gene-", "", TDel_GID) %in% rownames(seurat_integrated))
 
