@@ -82,8 +82,16 @@ plot_func <- function(cluster, mk_df = markers){
   mks <- filter(mk_df, Cluster == cluster)
   mks2 <- str_split(mks$TDel_GID, "gene-", simplify = TRUE)[,2]
   size = length(mks2) * 1.5
-  f <- FeaturePlot(seurat_integrated, features = mks2, min.cutoff = "q10")
-  ggsave(paste(plotpath, cluster, "_feature_plot.pdf", sep = ""), f)
+  plots <- lapply(mks2, FeaturePlot, object = seurat_integrated, min.cutoff = "q10")  
+  pdf(paste(plotpath, cluster, "_feature_plot.pdf", sep = ""))
+  for (p in plots){
+    p
+  }
+  dev.off()
 }
 
-lapply(unique(markers$Cluster), plot_func, mk_df = markers)
+
+
+
+
+
