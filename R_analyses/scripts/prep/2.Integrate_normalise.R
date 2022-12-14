@@ -31,11 +31,16 @@ library(ggpubr)
 library(future)
 
 #Load data and parsing commands
+output_path <- opt$output_path
 load(opt$path_to_seurat_object) # path to filtered seurat RData
+
+#make folders
 outdatapath = paste(output_path, "/outdata", sep = "")
 dir.create(outdatapath, showWarnings = F, recursive = T)
 plotpath = paste(output_path, "/plots/", sep = "")
 dir.create(plotpath, showWarnings = F, recursive = T)
+
+#parallelise
 plan("multiprocess", workers = opt$threads)
 
 
