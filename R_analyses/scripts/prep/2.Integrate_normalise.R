@@ -6,7 +6,9 @@ option_list = list(
   make_option(c("-d", "--path_to_seurat_object"), type="character", default=".", 
               help="path to where you have the stored your seurat object", metavar="character"),
   make_option(c("-o", "--output_path"), type="character", default=".", 
-              help="where you want to save your output plots and RData files", metavar="character")
+              help="where you want to save your output plots and RData files", metavar="character"),
+  make_option(c("-t", "--threads"), type="numeric", default=1, 
+              help="number of threads for parallelising", metavar="numeric")
 )
 
 opt_parser = OptionParser(option_list=option_list)
@@ -17,11 +19,6 @@ if (is.null(opt$datapath)){
   stop("At least one argument must be supplied (input file)", call.=FALSE)
 }
 
-outdatapath = paste(output_path, "/outdata", sep = "")
-dir.create(outdatapath, showWarnings = F, recursive = T)
-plotpath = paste(output_path, "/plots/", sep = "")
-dir.create(plotpath, showWarnings = F, recursive = T)
-
 ###LIBRARIES ----
 library(Seurat)
 library(tidyverse)
@@ -31,9 +28,17 @@ library(cowplot)
 library(RCurl)
 library(stringr)
 library(ggpubr)
+library(future)
 
-#Load data
+#Load data and parsing commands
 load(opt$path_to_seurat_object) # path to filtered seurat RData
+outdatapath = paste(output_path, "/outdata", sep = "")
+dir.create(outdatapath, showWarnings = F, recursive = T)
+plotpath = paste(output_path, "/plots/", sep = "")
+dir.create(plotpath, showWarnings = F, recursive = T)
+plan("multiprocess", workers = opt$threads)
+
+
 
 #Initial plot making for comparisons to before integration 
 filtered_seurat <- RunPCA(object = filtered_seurat)
