@@ -83,16 +83,7 @@ plot_func <- function(cluster, mk_df = markers){
   mks2 <- str_split(mks$TDel_GID, "gene-", simplify = TRUE)[,2]
   size = length(mks2) * 1.5
   f <- FeaturePlot(seurat_integrated, features = mks2, min.cutoff = "q10")
-  ggsave(paste("plots/", cluster, "_feature_plot.pdf", sep = ""), f, height = size, width = 1.5* size)
+  ggsave(paste(plotpath, cluster, "_feature_plot.pdf", sep = ""), f, height = size, width = 1.5* size)
 }
 
 lapply(unique(markers$Cluster), plot_func, mk_df = markers)
-
-
-ggsave("plots/featureplot_markers.pdf", plots, height = 30, width = 30)
-
-
-f <- FeaturePlot(seurat_integrated, features = marker_genes[51:80], min.cutoff = "q9")
-ggsave("plots/featureplot_markers.pdf", f, height = 30, width = 30)
-d <- DimPlot(seurat_integrated, reduction = "umap", split.by = "treatment", height = 25, width = 25)
-ggsave("plots/del.pdf", d)
