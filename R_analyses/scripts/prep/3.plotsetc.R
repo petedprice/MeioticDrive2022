@@ -82,7 +82,7 @@ plot_func <- function(cluster, mk_df = markers){
   mks2 <- str_split(mks$TDel_GID, "gene-", simplify = TRUE)[,2]
   size = length(mks2) * 1.5
   plots <- lapply(mks2, FeaturePlot, object = seurat_integrated, min.cutoff = "q10")  
-  pdf(paste(plotpath, cluster, "_feature_plot.pdf", sep = ""))
+  pdf(paste(plotpath, cluster, "_feature_plot.pdf", sep = ""), width = 5, height = 5)
   for (p in plots){
     plot(p)
   }
@@ -90,11 +90,5 @@ plot_func <- function(cluster, mk_df = markers){
 }
 lapply(unique(markers$Cluster), plot_func, mk_df = markers)
 
+save(seurat_integrated, file = paste(outdatapath, "/3.plot_seurat.RData", sep = ""))
 
-#plots <- lapply(features[1:9], FeaturePlot, object = seurat_integrated, min.cutoff = "q10")  
-
-#pdf("del.pdf")
-#for (p in plots){
-#  plot(p)
-#}
-#dev.off()
