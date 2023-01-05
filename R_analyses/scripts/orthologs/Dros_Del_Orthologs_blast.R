@@ -31,15 +31,35 @@ markers <- read_excel("indata/markers/elife2019/elife-47138-supp1-v1.xlsx")
 markers2 <- read_excel("indata/markers/flyatlas_dros_markers.xlsx") %>% 
   filter(Tissue == "testis")
 
+collapse <- function(x){
+    gene <- t(str_split(x[15], ",", simplify = TRUE))
+    gene <- gsub(" ", "", gene, fixed = TRUE)
+    gene <- c(str_split(gene, ":", simplify = TRUE))
+    gene <- gene[gene != ""]
+    Cluster = rep(x[2], length(gene))
+    return(data.frame())
+}
+
 markers2list <- apply(markers2, 1, function(x)(return(
   data.frame(
     Cluster = rep(x[2]), 
-    gene = t(str_split(x[15], ",", simplify = TRUE)))
+    gene = t(str_split(x[15], ",", simplify = TRUE)) %>% 
+      gsub(string = " ", pattern =  "")) 
   )))
 
 markers2df <- bind_rows(markers2list)
+markers2df$gene <- gsub(" ", "", markers2df$gene, fixed = TRUE)
+
 orthologs_testis <- merge(orths_t2, markers, by.x = 'Dros_GID', by.y = 'Gene', all.x = TRUE)[,c(3,4,5,6,1,2,7:12)]
 #or 
 intersect(unique(markers2df$gene), orths_t2$Dros_GID)
 orthologs_dros_atlas <- merge(orths_t2, markers2df, by.x = 'Dros_GID', by.y = 'gene', all.x = TRUE)[,c(3,4,5,6,1,2,7)]
 save(orthologs_testis, orthologs_dros_atlas, file = "outdata/RData/orthologs.RData")
+
+overlap <- intersect(markers$Gene, markers2df$gene)
+filter()
+
+length(unique(markers$Gene))
+length(unique(markers2df$gene))
+
+

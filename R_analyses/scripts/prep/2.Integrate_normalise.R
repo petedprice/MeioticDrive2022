@@ -58,14 +58,13 @@ if (opt$samples != 'all'){
   split_seurat <- split_seurat[keep_samples]
 }
 
-split_seurat <- lapply(split_seurat, SCTransform, vars.to.regress = 'mitoRatio') #may potentially have to regress out cell cycle 
-split_seurat <- future.apply::future_lapply(split_seurat, SCTransform, vars.to.regress = 'mitoRatio') #may potentially have to regress out cell cycle 
-
 #SCT normalise the data
+split_seurat <- future_lapply(split_seurat, SCTransform, vars.to.regress = 'mitoRatio') #may potentially have to regress out cell cycle 
+
 
 #prep data for integration 
 # Identify variable features for integrating
-features <- SelectIntegrationFeatures(object.list = split_seurat, nfeatures = 3000)
+features <- SelectIntegrationFeatures(object.list = split_seurat, nfeatures = 2000)
 
 #Preprosssesing step neccesary if SCT transformed
 split_seurat <- PrepSCTIntegration(object.list = split_seurat, 
@@ -97,5 +96,5 @@ seurat_integrated <- IntegrateData(anchorset = anchors,
                                    normalization.method = "SCT")
 
 #Save data
-save(split_seurat, seurat_integrated, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))
+save(split_seurat, seurat_integrated, anchors, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))
 

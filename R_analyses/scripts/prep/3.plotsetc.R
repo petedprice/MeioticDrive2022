@@ -34,6 +34,7 @@ library(stringr)
 library(ggpubr)
 library(future)
 library(future.apply)
+library(dplyr)
 
 #Load data and parsing commands
 output_path <- opt$output_path
@@ -62,19 +63,6 @@ seurat_integrated <- FindNeighbors(object = seurat_integrated,
                                    dims = 1:40)
 seurat_integrated <- FindClusters(object = seurat_integrated,
                                   resolution = c(0.4, 0.6, 0.8, 1.0, 1.4))
-# Visualization
-#p1 <- DimPlot(seurat_integrated, reduction = "umap", group.by = "treatment")
-#p2 <- DimPlot(seurat_integrated, reduction = "umap", label = TRUE, repel = TRUE)
-#ggsave("plots/UMAP1.pdf", p2 + p1, width = 15, height = 10)
-
-DefaultAssay(seurat_integrated) <- "RNA"
-#nk.markers <- FindConservedMarkers(seurat_integrated, ident.1 = 6, grouping.var = "treatment", verbose = FALSE)
-#head(nk.markers)
-########################### ORTHOLOGS ---------
-
-
-
-
 
 plot_func <- function(cluster, mk_df = markers){
   print(cluster)
@@ -88,7 +76,7 @@ plot_func <- function(cluster, mk_df = markers){
   }
   dev.off()
 }
-lapply(unique(markers$Cluster), plot_func, mk_df = markers)
 
-save(seurat_integrated, file = paste(outdatapath, "/3.plot_seurat.RData", sep = ""))
+lapply(unique(markers$Cluster), plot_func, mk_df = markers)
+save(seurat_integrated,  file = paste(outdatapath, "/3.plot_seurat.RData", sep = ""))
 
