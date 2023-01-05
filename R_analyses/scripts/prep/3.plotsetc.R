@@ -64,6 +64,7 @@ seurat_integrated <- FindNeighbors(object = seurat_integrated,
 seurat_integrated <- FindClusters(object = seurat_integrated,
                                   resolution = c(0.4, 0.6, 0.8, 1.0, 1.4))
 
+
 plot_func <- function(cluster, mk_df = markers){
   print(cluster)
   mks <- filter(mk_df, Cluster == cluster)
@@ -76,7 +77,13 @@ plot_func <- function(cluster, mk_df = markers){
   }
   dev.off()
 }
-
 lapply(unique(markers$Cluster), plot_func, mk_df = markers)
+
+pdf(paste(plotpath, "DimPlotst.pdf", sep = ""), width = 20, height = 20)
+DimPlot(seurat_integrated, group.by = "sample")
+DimPlot(seurat_integrated, split.by = "sample", ncol = 3)
+DimPlot(seurat_integrated, group.by = "ident")
+dev.off()
+
 save(seurat_integrated,  file = paste(outdatapath, "/3.plot_seurat.RData", sep = ""))
 

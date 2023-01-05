@@ -96,5 +96,5 @@ seurat_integrated <- IntegrateData(anchorset = anchors,
                                    normalization.method = "SCT")
 
 #Save data
-save(split_seurat, seurat_integrated, anchors, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))
+save(split_seurat, seurat_integrated, anchors, features, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))
 
