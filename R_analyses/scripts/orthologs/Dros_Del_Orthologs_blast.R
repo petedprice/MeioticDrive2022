@@ -44,7 +44,7 @@ markers2list <- apply(markers2, 1, function(x)(return(
   data.frame(
     Cluster = rep(x[2]), 
     gene = t(str_split(x[15], ",", simplify = TRUE)) %>% 
-      gsub(string = " ", pattern =  "")) 
+      gsub(pattern = " ", replacement =  "")) 
   )))
 
 markers2df <- bind_rows(markers2list)
@@ -57,7 +57,6 @@ orthologs_dros_atlas <- merge(orths_t2, markers2df, by.x = 'Dros_GID', by.y = 'g
 save(orthologs_testis, orthologs_dros_atlas, file = "outdata/RData/orthologs.RData")
 
 overlap <- intersect(markers$Gene, markers2df$gene)
-filter()
 
 length(unique(markers$Gene))
 length(unique(markers2df$gene))

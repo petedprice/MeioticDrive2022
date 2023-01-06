@@ -78,11 +78,16 @@ plot_func <- function(cluster, mk_df = markers){
   dev.off()
 }
 lapply(unique(markers$Cluster), plot_func, mk_df = markers)
+plots <- list()
+plots[[1]] <- DimPlot(seurat_integrated, group.by = "sample", pt.size = 1)
+plots[[2]] <- DimPlot(seurat_integrated, split.by = "sample", ncol = 3)
+plots[[3]] <- DimPlot(seurat_integrated, group.by = "ident", pt.size = 1)
+save(plots,  file = paste(outdatapath, "/3.plots.RData", sep = ""))
 
 pdf(paste(plotpath, "DimPlotst.pdf", sep = ""), width = 20, height = 20)
-DimPlot(seurat_integrated, group.by = "sample")
-DimPlot(seurat_integrated, split.by = "sample", ncol = 3)
-DimPlot(seurat_integrated, group.by = "ident")
+plot(plots[[1]])
+plot(plots[[2]])
+plot(plots[[3]])
 dev.off()
 
 save(seurat_integrated,  file = paste(outdatapath, "/3.plot_seurat.RData", sep = ""))
