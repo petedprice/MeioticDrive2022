@@ -83,6 +83,7 @@ anchors <- FindIntegrationAnchors(object.list = split_seurat,
 #Initial plot making for comparisons to before integration 
 
 # Perform PCA
+print("first unintegrated UMAPS")
 remerged <- Reduce(merge, split_seurat)
 remerged <- RunPCA(object = remerged, features = features)
 remerged <- FindNeighbors(remerged, dims = 1:30, verbose = FALSE)
@@ -99,9 +100,11 @@ ggsave(filename = paste(plotpath, "fs_treatment_PCA.pdf", sep = ""))
 
 
 #Integrate data 
+print("integrating")
 seurat_integrated <- IntegrateData(anchorset = anchors, 
                                    normalization.method = "SCT")
 
 #Save data
+print("saving data")
 save(split_seurat, seurat_integrated, anchors, features, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))
 
