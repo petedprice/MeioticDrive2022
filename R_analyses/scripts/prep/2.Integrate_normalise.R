@@ -86,6 +86,10 @@ anchors <- FindIntegrationAnchors(object.list = split_seurat,
 print("first unintegrated UMAPS")
 remerged <- Reduce(merge, split_seurat)
 remerged <- RunPCA(object = remerged, features = features)
+remerged <- RunUMAP(remerged, 
+                             dims = 1:30,
+                             reduction = "pca")
+
 remerged <- FindNeighbors(remerged, dims = 1:30, verbose = FALSE)
 remerged <- FindClusters(remerged, verbose = FALSE)
 
