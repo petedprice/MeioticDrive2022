@@ -106,7 +106,8 @@ ggsave(filename = paste(plotpath, "fs_treatment_PCA.pdf", sep = ""))
 #Integrate data 
 print("integrating")
 seurat_integrated <- IntegrateData(anchorset = anchors, 
-                                   normalization.method = "SCT")
+                                   normalization.method = "SCT", 
+                                   features.to.integrate = unique(unlist(lapply(split_seurat, rownames))))
 
 #Save data
 print("saving data")
