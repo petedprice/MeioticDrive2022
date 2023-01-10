@@ -56,21 +56,26 @@ if (opt$samples != 'all'){
   print("sample removing")
   keep_samples <- read.table(opt$samples)[,1]
   split_seurat <- split_seurat[keep_samples]
+  print(paste("keeping samples ", keep_samples, sep = ""))
 }
 
 #SCT normalize the data (SCTransform also accounts for sequencing depth)
+print("SCTransform")
 split_seurat <- future_lapply(split_seurat, SCTransform, vars.to.regress = 'mitoRatio') #may potentially have to regress out cell cycle 
 
 
 #prep data for integration 
 # Identify variable features for integrating
+print("SelectIntegrationFeatures")
 features <- SelectIntegrationFeatures(object.list = split_seurat, nfeatures = 3000)
 
 #Prepossessing step necessary if SCT transformed
+print("PrepSCTIntegration")
 split_seurat <- PrepSCTIntegration(object.list = split_seurat, 
                                    anchor.features = features)
 
 #Find anchors that link datasets
+print("FindIntegrationAnchors")
 anchors <- FindIntegrationAnchors(object.list = split_seurat, 
                                   anchor.features = features, 
                                   normalization.method = "SCT")
