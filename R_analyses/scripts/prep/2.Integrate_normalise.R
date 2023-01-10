@@ -58,18 +58,17 @@ if (opt$samples != 'all'){
   split_seurat <- split_seurat[keep_samples]
 }
 
-#SCT normalise the data
+#SCT normalize the data (SCTransform also accounts for sequencing depth)
 split_seurat <- future_lapply(split_seurat, SCTransform, vars.to.regress = 'mitoRatio') #may potentially have to regress out cell cycle 
 
 
 #prep data for integration 
 # Identify variable features for integrating
-features <- SelectIntegrationFeatures(object.list = split_seurat, nfeatures = 2000)
+features <- SelectIntegrationFeatures(object.list = split_seurat, nfeatures = 3000)
 
-#Preprosssesing step neccesary if SCT transformed
+#Prepossessing step necessary if SCT transformed
 split_seurat <- PrepSCTIntegration(object.list = split_seurat, 
                                    anchor.features = features)
-
 
 #Find anchors that link datasets
 anchors <- FindIntegrationAnchors(object.list = split_seurat, 
@@ -78,15 +77,18 @@ anchors <- FindIntegrationAnchors(object.list = split_seurat,
 
 #Initial plot making for comparisons to before integration 
 
-
 # Perform PCA
 remerged <- Reduce(merge, split_seurat)
 remerged <- RunPCA(object = remerged, features = features)
+remerged <- FindNeighbors(remerged, dims = 1:30, verbose = FALSE)
+remerged <- FindClusters(remerged, verbose = FALSE)
+
 save(remerged, file = paste(outdatapath, "/remerged.RData", sep = ""))
-fs_PCA1 <- PCAPlot(remerged,
+
+fs_PCA1 <- DimPlot(remerged,
                    split.by = "sample")
 ggsave(filename = paste(plotpath, "fs_sample_PCA.pdf", sep = ""))
-fs_PCA2 <- PCAPlot(remerged,
+fs_PCA2 <- DimPlot(remerged,
                    split.by = "treatment")
 ggsave(filename = paste(plotpath, "fs_treatment_PCA.pdf", sep = ""))
 

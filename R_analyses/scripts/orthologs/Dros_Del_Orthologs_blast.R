@@ -16,7 +16,7 @@ k <- keys(TDel_txdb_coords, keytype = "GENEID")
 TDel_txdf <- AnnotationDbi::select(TDel_txdb_coords, keys = k,  columns = c("TXNAME", "TXCHROM"), keytype = "GENEID")
 colnames(TDel_txdf) <- c("TDel_GID", "TDel_TXN", "TDel_CHR")
 
-orths_t0 <- read.table("indata/orthologs/top_hits/top_hits.txt", 
+orths_t0 <- read.table("indata/orthologs/Jan2023_top_hits/top_hits.txt", 
                         sep = ',', header = FALSE)
 
 colnames(orths_t0) <- c("TDel_TXN", "Dros_TXN")
@@ -62,3 +62,5 @@ length(unique(markers$Gene))
 length(unique(markers2df$gene))
 
 
+oo <- orthologs_dros_atlas[which(orthologs_dros_atlas$Dros_GID %in% overlap), ]
+ov2 <- unique(oo$TDel_GID)
