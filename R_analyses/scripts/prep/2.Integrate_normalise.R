@@ -49,6 +49,11 @@ dir.create(plotpath, showWarnings = F, recursive = T)
 plan("multicore", workers = opt$threads)
 options(future.globals.maxSize = 8000 * 1024^5)
 
+#Cell cycle scoring 
+filtered_seurat <- CellCycleScoring(filtered_seurat, 
+                                    g2m.features = cellcycle$TDel_GID[cellcycle$phase == "G2/M"], 
+                                    s.features = cellcycle$TDel_GID[cellcycle$phase == "S"])
+
 # split object into a list by sample
 split_seurat <- SplitObject(filtered_seurat, split.by = "sample")
 
@@ -61,7 +66,8 @@ if (opt$samples != 'all'){
 
 #SCT normalize the data (SCTransform also accounts for sequencing depth)
 print("SCTransform")
-split_seurat <- future_lapply(split_seurat, SCTransform, vars.to.regress = 'mitoRatio') #may potentially have to regress out cell cycle 
+split_seurat <- future_lapply(split_seurat, SCTransform, vars.to.regress = 
+                                c("mitoRatio","nUMI","S.Score","G2M.Score")) #may potentially have to regress out cell cycle 
 
 
 #prep data for integration 
@@ -101,6 +107,11 @@ ggsave(filename = paste(plotpath, "fs_sample_PCA.pdf", sep = ""))
 fs_PCA2 <- DimPlot(remerged,
                    split.by = "treatment")
 ggsave(filename = paste(plotpath, "fs_treatment_PCA.pdf", sep = ""))
+ggsave(filename = paste(plotpath, "fs_treatment_PCA.pdf", sep = ""))
+fs_PCA3 <- DimPlot(remerged,
+                   split.by = "Phase", group.by = "Phase")
+ggsave(filename = paste(plotpath, "fs_Phase_PCA.pdf", sep = ""))
+
 
 
 #Integrate data 
