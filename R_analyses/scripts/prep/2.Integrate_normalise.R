@@ -11,7 +11,7 @@ option_list = list(
               help="number of threads for parallelising", metavar="numeric"),
   make_option(c("-s", "--samples"), type="character", default="all", 
               help="path to dataframe containing samples (see format on github)", metavar="character"),
-  make_option(c("-c", "--cellcycle"), type="character", default="data/cell_cycle_markers_complete.csv", 
+  make_option(c("-c", "--cellcycle"), type="character", default="/home/bop20pp/software/MeioticDrive2022/R_analyses/data/cell_cycle_markers_complete.csv", 
               help="path to dataframe containing cell cycle markers", metavar="character")
   
 )
