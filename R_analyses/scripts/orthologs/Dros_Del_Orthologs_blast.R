@@ -16,20 +16,27 @@ k <- keys(TDel_txdb_coords, keytype = "GENEID")
 TDel_txdf <- AnnotationDbi::select(TDel_txdb_coords, keys = k,  columns = c("TXNAME", "TXCHROM"), keytype = "GENEID")
 colnames(TDel_txdf) <- c("TDel_GID", "TDel_TXN", "TDel_CHR")
 
-orths_t0 <- read.table("indata/orthologs/Jan2023_top_hits/top_hits.txt", 
+orths_t0 <- read.table("indata/orthologs/Jan2023_top_hits/top_hits2.txt", 
                         sep = ',', header = FALSE)
 
 colnames(orths_t0) <- c("TDel_TXN", "Dros_TXN")
-orths_t0[,1] <- str_split(orths_t0[,1], "stalkie_", simplify = TRUE)[,2]
-orths_t0[,2] <- str_split(orths_t0[,2], "dros_rna-", simplify = TRUE)[,2]
+orths_t0[,1] <- str_split(orths_t0[,1], "lstalk_", simplify = TRUE)[,2]
+orths_t0[,2] <- str_split(orths_t0[,2], "ldross_rna-", simplify = TRUE)[,2]
 orths_t0[,2] <- str_split(orths_t0[,2], "[)]", simplify = TRUE)[,1]
 orths_t1 <- merge(orths_t0, TDel_txdf, by.x = 'TDel_TXN', by.y = 'TDel_TXN')
-orths_t2 <- merge(orths_t1, dros_txdf, by.x = 'Dros_TXN', 
+ortholog_table <- merge(orths_t1, dros_txdf, by.x = 'Dros_TXN', 
                by.y = 'Dros_TXN')
+save(ortholog_table, file = "outdata/RData/ortholog_table.RData")
+
+
 ##### NEXT THING TO DO IS LINK IN THE MARKER GENES 
 markers <- read_excel("indata/markers/elife2019/elife-47138-supp1-v1.xlsx")
 markers2 <- read_excel("indata/markers/flyatlas_dros_markers.xlsx") %>% 
   filter(Tissue == "testis")
+markers3 <- readxl::read_excel("indata/markers/WITTPLOS2021/Compiled_markers13012022.xlsx", col_names = TRUE) %>% 
+  pivot_longer(c("Marker1", "Marker2"), names_to = 'gene')
+markers3 <- markers3[,c("Cell_type", "value")]
+markers3 <- markers3[is.na(markers3$value) == FALSE,]
 
 collapse <- function(x){
     gene <- t(str_split(x[15], ",", simplify = TRUE))
@@ -54,13 +61,6 @@ orthologs_testis <- merge(orths_t2, markers, by.x = 'Dros_GID', by.y = 'Gene', a
 #or 
 intersect(unique(markers2df$gene), orths_t2$Dros_GID)
 orthologs_dros_atlas <- merge(orths_t2, markers2df, by.x = 'Dros_GID', by.y = 'gene', all.x = TRUE)[,c(3,4,5,6,1,2,7)]
-save(orthologs_testis, orthologs_dros_atlas, file = "outdata/RData/orthologs.RData")
-
-overlap <- intersect(markers$Gene, markers2df$gene)
-
-length(unique(markers$Gene))
-length(unique(markers2df$gene))
+save(ortholog_table, orthologs_testis, orthologs_dros_atlas, file = "outdata/RData/orthologs.RData")
 
 
-oo <- orthologs_dros_atlas[which(orthologs_dros_atlas$Dros_GID %in% overlap), ]
-ov2 <- unique(oo$TDel_GID)

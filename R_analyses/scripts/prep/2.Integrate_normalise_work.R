@@ -10,7 +10,7 @@ option_list = list(
   make_option(c("-t", "--threads"), type="numeric", default=1, 
               help="number of threads for parallelising", metavar="numeric"),
   make_option(c("-s", "--samples"), type="character", default="all", 
-              help="path to dataframe containing samples (see format on github)", metavar="character"),
+              help="path to dataframe containing samples (see format on github)", metavar="character"), 
   make_option(c("-c", "--cellcycle"), type="character", default="data/cell_cycle_markers_complete.csv", 
               help="path to dataframe containing cell cycle markers", metavar="character")
   
@@ -19,6 +19,9 @@ option_list = list(
 
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
+opt$cellcycle <- "indata/markers/cell_cycle_markers_complete.csv"
+cellcycle <- read.table(opt$cellcycle)
+cellcycle$TDel_GID <- gsub("gene-", "", cellcycle$TDel_GID)
 
 if (is.null(opt$path_to_seurat_object)){
   print_help(opt_parser)
@@ -40,8 +43,6 @@ library(future.apply)
 #Load data and parsing commands
 output_path <- opt$output_path
 load(opt$path_to_seurat_object) # path to filtered seurat RData
-cellcycle <- read.table(opt$cellcycle)
-cellcycle$TDel_GID <- gsub("gene-", "", cellcycle$TDel_GID)
 
 #make folders
 outdatapath = paste(output_path, "/outdata", sep = "")
@@ -53,12 +54,10 @@ dir.create(plotpath, showWarnings = F, recursive = T)
 plan("multicore", workers = opt$threads)
 options(future.globals.maxSize = 8000 * 1024^5)
 
-#Cell cycle scoring 
-filtered_seurat <- CellCycleScoring(filtered_seurat, 
-                                    g2m.features = cellcycle$TDel_GID[cellcycle$phase == "G2/M"], 
-                                    s.features = cellcycle$TDel_GID[cellcycle$phase == "S"])
-
 # split object into a list by sample
+filtered_seurat <- CellCycleScoring(filtered_seurat, 
+                             g2m.features = cellcycle$TDel_GID[cellcycle$phase == "G2/M"], 
+                             s.features = cellcycle$TDel_GID[cellcycle$phase == "S"])
 split_seurat <- SplitObject(filtered_seurat, split.by = "sample")
 
 if (opt$samples != 'all'){
@@ -68,10 +67,12 @@ if (opt$samples != 'all'){
   print(paste("keeping samples ", keep_samples, sep = ""))
 }
 
+
+
 #SCT normalize the data (SCTransform also accounts for sequencing depth)
 print("SCTransform")
 split_seurat <- future_lapply(split_seurat, SCTransform, vars.to.regress = 
-                                c("mitoRatio","nUMI","S.Score","G2M.Score")) #may potentially have to regress out cell cycle 
+                                 c("mitoRatio","nUMI","S.Score","G2M.Score")) #may potentially have to regress out cell cycle 
 
 
 #prep data for integration 
@@ -81,6 +82,7 @@ features <- SelectIntegrationFeatures(object.list = split_seurat, nfeatures = 30
 
 #Prepossessing step necessary if SCT transformed
 print("PrepSCTIntegration")
+
 split_seurat <- PrepSCTIntegration(object.list = split_seurat, 
                                    anchor.features = features)
 
@@ -100,6 +102,11 @@ remerged <- RunUMAP(remerged,
                              dims = 1:30,
                              reduction = "pca")
 
+
+pdf("controled_plot.pdf")
+DimPlot(remerged, group.by = 'Phase', split.by = "Phase")
+dev.off()
+
 remerged <- FindNeighbors(remerged, dims = 1:30, verbose = FALSE)
 remerged <- FindClusters(remerged, verbose = FALSE)
 
@@ -111,11 +118,6 @@ ggsave(filename = paste(plotpath, "fs_sample_PCA.pdf", sep = ""))
 fs_PCA2 <- DimPlot(remerged,
                    split.by = "treatment")
 ggsave(filename = paste(plotpath, "fs_treatment_PCA.pdf", sep = ""))
-ggsave(filename = paste(plotpath, "fs_treatment_PCA.pdf", sep = ""))
-fs_PCA3 <- DimPlot(remerged,
-                   split.by = "Phase", group.by = "Phase")
-ggsave(filename = paste(plotpath, "fs_Phase_PCA.pdf", sep = ""))
-
 
 
 #Integrate data 
