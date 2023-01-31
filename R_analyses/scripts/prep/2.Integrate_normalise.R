@@ -90,29 +90,29 @@ anchors <- FindIntegrationAnchors(object.list = split_seurat,
                                   anchor.features = features, 
                                   normalization.method = "SCT")
 
-#Initial plot making for comparisons to before integration 
+#Initial plot making for comparisons to after integration 
 
 # Perform PCA
 print("first unintegrated UMAPS")
-remerged <- Reduce(merge, split_seurat)
-remerged <- RunPCA(object = remerged, features = features)
-remerged <- RunUMAP(remerged, 
+seurat_SCT_normalised <- Reduce(merge, split_seurat)
+seurat_SCT_normalised <- RunPCA(object = seurat_SCT_normalised, features = features)
+seurat_SCT_normalised <- RunUMAP(seurat_SCT_normalised, 
                              dims = 1:30,
                              reduction = "pca")
 
-remerged <- FindNeighbors(remerged, dims = 1:30, verbose = FALSE)
-remerged <- FindClusters(remerged, verbose = FALSE)
+seurat_SCT_normalised <- FindNeighbors(seurat_SCT_normalised, dims = 1:30, verbose = FALSE)
+seurat_SCT_normalised <- FindClusters(seurat_SCT_normalised, verbose = FALSE)
 
-save(remerged, file = paste(outdatapath, "/remerged.RData", sep = ""))
+save(seurat_SCT_normalised, file = paste(outdatapath, "/seurat_SCT_normalised.RData", sep = ""))
 
-fs_PCA1 <- DimPlot(remerged,
+fs_PCA1 <- DimPlot(seurat_SCT_normalised,
                    split.by = "sample")
 ggsave(filename = paste(plotpath, "fs_sample_PCA.pdf", sep = ""))
-fs_PCA2 <- DimPlot(remerged,
+fs_PCA2 <- DimPlot(seurat_SCT_normalised,
                    split.by = "treatment")
 ggsave(filename = paste(plotpath, "fs_treatment_PCA.pdf", sep = ""))
 ggsave(filename = paste(plotpath, "fs_treatment_PCA.pdf", sep = ""))
-fs_PCA3 <- DimPlot(remerged,
+fs_PCA3 <- DimPlot(seurat_SCT_normalised,
                    split.by = "Phase", group.by = "Phase")
 ggsave(filename = paste(plotpath, "fs_Phase_PCA.pdf", sep = ""))
 
