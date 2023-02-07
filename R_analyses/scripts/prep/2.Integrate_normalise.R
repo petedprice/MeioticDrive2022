@@ -68,10 +68,11 @@ if (opt$samples != 'all'){
   print(paste("keeping samples ", keep_samples, sep = ""))
 }
 
-#SCT normalize the data (SCTransform also accounts for sequencing depth)
+#SCT normalize the data (SCTransform also accounts for sequencing depth, 
+    #also regressing out mitochondrial percentage and cell cycle scoring)
 print("SCTransform")
 split_seurat <- future_lapply(split_seurat, SCTransform, vars.to.regress = 
-                                c("mitoRatio","nUMI","S.Score","G2M.Score")) #may potentially have to regress out cell cycle 
+                                c("mitoRatio","nUMI","S.Score","G2M.Score"))
 
 
 #prep data for integration 

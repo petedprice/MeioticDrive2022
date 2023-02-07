@@ -19,8 +19,18 @@ BiocManager::install(c("monocle"))
 # Next install a few more dependencies
 BiocManager::install(c('DelayedArray', 'DelayedMatrixStats', 'org.Hs.eg.db', 'org.Mm.eg.db'))
 
-load("indata/RData/integrated_seurat.RData")
+load("outdata/RData/integrated_seurat.RData")
 load("outdata/RData/ortholog_table.RData")
+seurat_integrated <- RunPCA(object = seurat_integrated)
+seurat_integrated <- RunUMAP(seurat_integrated, 
+                             dims = 1:40,
+                             reduction = "pca")
+
+seurat_integrated <- FindNeighbors(object = seurat_integrated, 
+                                   dims = 1:40)
+seurat_integrated <- FindClusters(object = seurat_integrated,
+                                  resolution = 0.4)
+
 
 markers <- readxl::read_excel("indata/markers/flyatlas_dros_markers.xlsx", col_names = TRUE) %>% 
   filter(Tissue == "testis") %>% 
@@ -55,8 +65,8 @@ swap_names <- function(x, tab, srt){
 
 
 nmarkerslist <- sapply(markerslist3, swap_names, tab = ortholog_table, srt = seurat_integrated)
-nmarkerslist <- nmarkerslist[-which(sapply(nmarkerslist, length) == 0)]
-nmarkerslist <- nmarkerslist[-which(duplicated(nmarkerslist))]
+#nmarkerslist <- nmarkerslist[-which(sapply(nmarkerslist, length) == 0)]
+#nmarkerslist <- nmarkerslist[-which(duplicated(nmarkerslist))]
 
 check_subset <- function(cell, ml){
   matches <- lapply(ml, function(x)(return(prod(cell %in% x)))) %>% 
@@ -83,34 +93,9 @@ results = SCINA(scina.data, nmarkerslist,
                 rm_overlap=FALSE, allow_unknown=TRUE, log_file='SCINA.log')
 
 seurat_integrated$scina_labels <- results$cell_labels
-d <- DimPlot(seurat_integrated, split.by= "scina_labels", group.by = "scina_labels")
-pdf("plots/cell_types_UMAP.pdf", width = 28, height = 8)
+d <- DimPlot(seurat_integrated, group.by = "scina_labels", label = T)
+pdf("plots/Cell_types/SCINA/SCINA_cell_types_UMAP.pdf", width = 11, height = 8)
 d
 dev.off()
-
-DimPlot(seurat_integrated, group.by = "scina_labels", shape.by = "scina_labels", 
-        raster = FALSE)
-
-tibble(
-  cluster = seurat_integrated$seurat_clusters,
-  cell_type = seurat_integrated$scina_labels
-) %>%
-  group_by(cluster,cell_type) %>%
-  count() %>%
-  group_by(cluster) %>%
-  mutate(
-    percent=(100*n)/sum(n)
-  ) %>%
-  ungroup() %>%
-  mutate(
-    cluster=paste("Cluster",cluster)
-  ) %>%
-  ggplot(aes(x="",y=percent, fill=cell_type)) +
-  geom_col(width=1) +
-  coord_polar("y", start=0) +
-  facet_wrap(vars(cluster)) +  
-  theme(axis.text.x=element_blank()) +
-  xlab(NULL) +
-  ylab(NULL)
 
 

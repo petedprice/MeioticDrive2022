@@ -60,7 +60,11 @@ p <- plot_cells(cds,
            label_branch_points=FALSE)
 p
 dev.off()
-
+swap_names <- function(x, tab, srt){
+  names <- unlist(lapply(x, function(g)(return(tab$TDel_GID[tab$Dros_GID == g])))) %>% 
+    gsub(pattern = "gene-", replacement = "")
+  return(intersect(names, rownames(srt)))
+}
 markers <- readxl::read_excel("indata/markers/elife2019/elife-47138-supp1-v1.xlsx", col_names = TRUE) %>% 
   dplyr::select("Gene", "Cluster")
 markerslist <- lapply(unique(markers$Cluster), function(x)(return(markers$Gene[markers$Cluster == x])))
@@ -94,7 +98,11 @@ plot_markers(marker_check)
 ## training the classifier ----
 cds_classifier <- train_cell_classifier(cds = cds,
                                          marker_file = marker_file_path, 
-                                        db = 'none', num_unknown= 500)
+                                        db = 'none', num_unknown= 50)
 
 
+cds <- classify_cells(cds, cds_classifier,
+                           db = 'none',
+                           cluster_extend = F)
+table(pData(cds)$cell_type)
 

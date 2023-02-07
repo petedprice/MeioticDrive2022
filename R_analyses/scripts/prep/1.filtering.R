@@ -54,7 +54,7 @@ for (file in files){
   seurat_obj <- CreateSeuratObject(counts = seurat_data, 
                                    min.features = ftr, ### FILTERING CELLS WITH LESS THAN 200 GENES
                                    project = sample, 
-                                   min.cells = 3) #Might be able to include min.cells = 3 for keeping a gene rather than doing this later
+                                   min.cells = 3) 
   seurat_obj <- RenameCells(seurat_obj, add.cell.id = sample)
   seurat_obj@meta.data$sample <- sample
   seurat_obj@meta.data$treatment <- substr(sample, 1, 2)
@@ -78,7 +78,7 @@ merged_seurat@meta.data <- metadata #Save the more complete metadat to the seura
 
 #FILTERING DATA
 filtered_seurat <- subset(x = merged_seurat, 
-                            (log10GenesPerUMI > 0.8) & # Can be dying cells or simple cell types such as blood cells
+                           # (log10GenesPerUMI > 0.8) & # Can be dying cells or simple cell types such as blood cells
                             (mitoRatio < 0.05))
 metadata_clean <- filtered_seurat@meta.data
 
