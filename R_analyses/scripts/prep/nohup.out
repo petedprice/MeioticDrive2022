@@ -1,0 +1,205 @@
+Attaching SeuratObject
+── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+✔ ggplot2 3.4.0     ✔ purrr   0.3.4
+✔ tibble  3.1.6     ✔ dplyr   1.0.7
+✔ tidyr   1.1.4     ✔ stringr 1.4.0
+✔ readr   2.1.3     ✔ forcats 0.5.2
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+
+Attaching package: ‘Matrix’
+
+The following objects are masked from ‘package:tidyr’:
+
+    expand, pack, unpack
+
+
+Attaching package: ‘scales’
+
+The following object is masked from ‘package:purrr’:
+
+    discard
+
+The following object is masked from ‘package:readr’:
+
+    col_factor
+
+
+Attaching package: ‘RCurl’
+
+The following object is masked from ‘package:tidyr’:
+
+    complete
+
+
+Attaching package: ‘ggpubr’
+
+The following object is masked from ‘package:cowplot’:
+
+    get_legend
+
+PC_ 1 
+Positive:  LOC119679888, LOC119662185, LOC119682877, LOC119669740, LOC119682222, LOC119672667, LOC119669699, LOC119671470, LOC119679415, LOC119675218 
+	   LOC119668103, LOC119667879, LOC119671465, LOC119675504, LOC119682862, LOC119684241, LOC119683276, LOC119683695, LOC119684568, LOC119688151 
+	   LOC119679533, LOC119687822, LOC119685720, LOC119689306, LOC119672988, LOC119683266, LOC119669265, LOC119673375, LOC119688084, LOC119669019 
+Negative:  LOC119683826, LOC119672033, LOC119684610, LOC119667602, LOC119668419, LOC119686111, LOC119683910, LOC119670070, LOC119683694, LOC119684885 
+	   LOC119671868, LOC119689719, LOC119685982, LOC119672019, LOC119671376, LOC119665906, LOC119685984, LOC119670404, LOC119684888, LOC119669618 
+	   LOC119673373, LOC119673174, LOC119671481, LOC119674599, LOC119683675, LOC119670999, LOC119683676, LOC119681480, LOC119670994, LOC119689828 
+PC_ 2 
+Positive:  LOC119662185, LOC119682222, LOC119679415, LOC119673375, LOC119689504, LOC119689610, LOC119672425, LOC119669265, LOC119685720, LOC119688965 
+	   LOC119662355, LOC119683276, LOC119672667, LOC119682652, LOC119669740, LOC119689306, LOC119671465, LOC119684667, LOC119687436, LOC119669268 
+	   LOC119671470, LOC119662206, LOC119688363, LOC119668146, LOC119689317, LOC119669266, LOC119682877, LOC119662739, LOC119682122, LOC119688087 
+Negative:  LOC119680562, LOC119680289, LOC119686384, LOC119661960, LOC119684014, LOC119670572, LOC119681707, LOC119684241, LOC119671543, LOC119682195 
+	   LOC119679716, LOC119682924, LOC119682265, LOC119675218, LOC119672865, LOC119684214, LOC119662140, LOC119662158, LOC119688938, LOC119664921 
+	   LOC119689855, LOC119685453, LOC119681326, LOC119677765, LOC119687059, LOC119668189, LOC119661859, LOC119672988, LOC119684318, LOC119679297 
+PC_ 3 
+Positive:  LOC119671381, LOC119683695, LOC119679888, LOC119672264, LOC119688164, LOC119685748, LOC119683348, LOC119686081, LOC119687822, LOC119675218 
+	   LOC119682877, LOC119687308, LOC119687884, LOC119669699, LOC119689229, LOC119689215, LOC119686288, LOC119671435, LOC119678692, LOC119664921 
+	   LOC119684241, LOC119674308, LOC119668174, LOC119684568, LOC119666603, LOC119687763, LOC119672988, LOC119688151, LOC119687098, LOC119687989 
+Negative:  LOC119673375, LOC119689504, LOC119682222, LOC119688965, LOC119662355, LOC119684667, LOC119688087, LOC119687436, LOC119682652, LOC119683272 
+	   LOC119689509, LOC119671240, LOC119687878, LOC119662089, LOC119667291, LOC119689629, LOC119679415, LOC119669268, LOC119667846, LOC119662185 
+	   LOC119669723, LOC119685720, LOC119678645, LOC119672425, LOC119690218, LOC119680811, LOC119689306, LOC119688088, LOC119669435, LOC119683276 
+PC_ 4 
+Positive:  LOC119683993, LOC119670459, LOC119662728, LOC119669293, LOC119671941, LOC119688557, LOC119678848, LOC119679106, LOC119673013, LOC119662077 
+	   LOC119679494, LOC119668657, LOC119681324, LOC119671984, LOC119673023, LOC119685569, LOC119687571, LOC119684313, LOC119683855, LOC119678009 
+	   LOC119678777, LOC119678167, LOC119666305, LOC119672374, LOC119686146, LOC119682826, LOC119679875, LOC119668150, LOC119668588, LOC119672375 
+Negative:  LOC119669699, LOC119679888, LOC119682877, LOC119675218, LOC119672988, LOC119668103, LOC119684241, LOC119688151, LOC119664921, LOC119679415 
+	   LOC119675504, LOC119687822, LOC119669740, LOC119684568, LOC119679533, LOC119689306, LOC119688084, LOC119672865, LOC119669209, LOC119689472 
+	   LOC119672154, LOC119662185, LOC119672752, LOC119671141, LOC119682652, LOC119687989, LOC119677765, LOC119677479, LOC119679549, LOC119683695 
+PC_ 5 
+Positive:  LOC119689504, LOC119673375, LOC119688965, LOC119682222, LOC119687436, LOC119662355, LOC119683558, LOC119683544, LOC119683694, LOC119688087 
+	   LOC119689263, LOC119662159, LOC119684667, LOC119682861, LOC119687571, LOC119675668, LOC119662728, LOC119681620, LOC119670459, LOC119669293 
+	   LOC119671941, LOC119662077, LOC119679494, LOC119683460, LOC119673013, LOC119671984, LOC119665906, LOC119680289, LOC119678848, LOC119678009 
+Negative:  LOC119684610, LOC119682877, LOC119678645, LOC119683695, LOC119680811, LOC119671381, LOC119671470, LOC119687182, LOC119672886, LOC119676035 
+	   LOC119682093, LOC119680654, LOC119677704, LOC119672954, LOC119682505, LOC119680312, LOC119687129, LOC119684893, LOC119672619, LOC119687098 
+	   LOC119678617, LOC119689215, LOC119679176, LOC119670781, LOC119689719, LOC119687569, LOC119679888, LOC119687691, LOC119670244, LOC119683826 
+Warning: The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric
+To use Python UMAP via reticulate, set umap.method to 'umap-learn' and metric to 'correlation'
+This message will be shown once per session
+15:19:25 UMAP embedding parameters a = 0.9922 b = 1.112
+15:19:25 Read 28768 rows and found 30 numeric columns
+15:19:25 Using Annoy for neighbor search, n_neighbors = 30
+15:19:25 Building Annoy index with metric = cosine, n_trees = 50
+0%   10   20   30   40   50   60   70   80   90   100%
+[----|----|----|----|----|----|----|----|----|----|
+**************************************************|
+15:19:32 Writing NN index file to temp file /tmp/RtmpYplQLh/file1c33d6873bbbd
+15:19:32 Searching Annoy index using 8 threads, search_k = 3000
+15:19:35 Annoy recall = 100%
+15:19:35 Commencing smooth kNN distance calibration using 8 threads with target n_neighbors = 30
+15:19:37 Initializing from normalized Laplacian + noise (using irlba)
+15:19:42 Commencing optimization for 200 epochs, with 1264184 positive edges
+Using method 'umap'
+0%   10   20   30   40   50   60   70   80   90   100%
+[----|----|----|----|----|----|----|----|----|----|
+**************************************************|
+15:20:20 Optimization finished
+Computing nearest neighbor graph
+Computing SNN
+0%   10   20   30   40   50   60   70   80   90   100%
+[----|----|----|----|----|----|----|----|----|----|
+0%   10   20   30   40   50   60   70   80   90   100%
+[----|----|----|----|----|----|----|----|----|----|
+0%   10   20   30   40   50   60   70   80   90   100%
+[----|----|----|----|----|----|----|----|----|----|
+0%   10   20   30   40   50   60   70   80   90   100%
+[----|----|----|----|----|----|----|----|----|----|
+0%   10   20   30   40   50   60   70   80   90   100%
+[----|----|----|----|----|----|----|----|----|----|
+**********************************************************************************************************************************************************************************************|
+*****|
+*****|
+****************************************|
+**********|
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 28768
+Number of edges: 1020386
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9377
+Number of communities: 19
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 28768
+Number of edges: 1020386
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9242
+Number of communities: 27
+Elapsed time: 5 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 28768
+Number of edges: 1020386
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9147
+Number of communities: 32
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 28768
+Number of edges: 1020386
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9073
+Number of communities: 36
+Elapsed time: 5 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 28768
+Number of edges: 1020386
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8920
+Number of communities: 44
+Elapsed time: 5 seconds
+Warning messages:
+1: UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_lapply-1’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore". 
+2: UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_lapply-2’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore". 
+3: UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_lapply-3’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore". 
+4: UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_lapply-4’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore". 
+5: UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_lapply-5’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore". 
+[1] "Epithelial cells"
+[1] "Early spermatids"
+[1] "Late spermatogonia"
+[1] "Cyst"
+[1] "Hub cells"
+[1] "Mature spermatids"
+[1] "GSC, Early spermatogonia"
+[1] "Early spermatocytes"
+[[1]]
+null device 
+          1 
+
+[[2]]
+null device 
+          1 
+
+[[3]]
+null device 
+          1 
+
+[[4]]
+null device 
+          1 
+
+[[5]]
+null device 
+          1 
+
+[[6]]
+null device 
+          1 
+
+[[7]]
+null device 
+          1 
+
+[[8]]
+null device 
+          1 
+

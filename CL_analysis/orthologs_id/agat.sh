@@ -9,7 +9,8 @@
 #$ -P ressexcon
 #$ -q ressexcon.q
 
-#$ -wd /fastdata/bop20pp/scRNAseq/orthofinder
+#$ -wd /fastdata/bop20pp/scRNAseq/blast/wdir
+
 source /usr/local/extras/Genomics/.bashrc
 
 source  activate agat
