@@ -30,17 +30,8 @@ devtools::install_github("cole-trapnell-lab/garnett", ref="monocle3")
 
 library(garnett)
 
-load("indata/RData/integrated_seurat.RData")
+load("data/RData/seurat_markers.RData")
 load("outdata/RData/ortholog_table.RData")
-seurat_integrated <- RunPCA(object = seurat_integrated)
-seurat_integrated <- RunUMAP(seurat_integrated, 
-                             dims = 1:40,
-                             reduction = "pca")
-
-seurat_integrated <- FindNeighbors(object = seurat_integrated, 
-                                   dims = 1:40)
-seurat_integrated <- FindClusters(object = seurat_integrated,
-                                  resolution = 0.4)
 
 cds <- as.cell_data_set(seurat_integrated)
 cds <- cluster_cells(cds, resolution=1e-3)
@@ -52,14 +43,23 @@ integrated.sub <- subset(as.Seurat(cds, assay = NULL), monocle3_partitions == 1)
 cds <- as.cell_data_set(integrated.sub)
 
 cds <- learn_graph(cds, use_partition = TRUE, verbose = FALSE)
-pdf("plots/del.pdf")
-p <- plot_cells(cds,
-           color_cells_by = "cluster",
+p1 <- plot_cells(cds,
+           color_cells_by = "customclassif",
            label_groups_by_cluster=FALSE,
            label_leaves=FALSE,
            label_branch_points=FALSE)
-p
+p2 <- plot_cells(cds,
+                 color_cells_by = "scina_labels",
+                 label_groups_by_cluster=FALSE,
+                 label_leaves=FALSE,
+                 label_branch_points=FALSE)
+
+
+
+pdf("plots/Cell_types/garnet_trajectory.pdf", width = 11, height = 4)
+ggarrange(plotlist = list(p1,p2))
 dev.off()
+
 swap_names <- function(x, tab, srt){
   names <- unlist(lapply(x, function(g)(return(tab$TDel_GID[tab$Dros_GID == g])))) %>% 
     gsub(pattern = "gene-", replacement = "")

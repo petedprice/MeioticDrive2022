@@ -124,7 +124,19 @@ print("integrating")
 seurat_integrated <- IntegrateData(anchorset = anchors, 
                                    normalization.method = "SCT", 
                                    features.to.integrate = unique(unlist(lapply(split_seurat, rownames))))
+seurat_integrated <- RunPCA(object = seurat_integrated)
+seurat_integrated <- RunTSNE(seurat_integrated, 
+                             dims = 1:40,
+                             reduction = "pca")
+seurat_integrated <- RunUMAP(seurat_integrated, 
+                             dims = 1:40,
+                             reduction = "pca")
 
+
+seurat_integrated <- FindNeighbors(object = seurat_integrated, 
+                                   dims = 1:40)
+seurat_integrated <- FindClusters(object = seurat_integrated,
+                                  resolution = 0.4)
 #Save data
 print("saving data")
 save(split_seurat, seurat_integrated, anchors, features, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))

@@ -93,8 +93,8 @@ results = SCINA(scina.data, nmarkerslist,
                 rm_overlap=FALSE, allow_unknown=TRUE, log_file='SCINA.log')
 
 seurat_integrated$scina_labels <- results$cell_labels
-d <- DimPlot(seurat_integrated, group.by = "scina_labels", label = T)
-pdf("plots/Cell_types/SCINA/SCINA_cell_types_UMAP.pdf", width = 11, height = 8)
+d <- DimPlot(seurat_integrated, group.by = "scina_labels", label = T, split.by = 'treatment')
+pdf("plots/Cell_types/SCINA/SCINA_cell_types_UMAP.pdf", width = 22, height = 8)
 d
 dev.off()
 

@@ -17,7 +17,8 @@ option_list = list(
 
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
-
+opt$path_to_integrated_seurat_object <- "data/RData/integrated_seurat.RData"
+opt$orthologs <- "outdata/orthologs/orthologs.tsv"
 if (is.null(opt$path_to_integrated_seurat_object)){
   print_help(opt_parser)
   stop("At least one argument must be supplied (input file)", call.=FALSE)
@@ -36,7 +37,6 @@ library(future)
 library(future.apply)
 library(dplyr)
 
-opt$path_to_integrated_seurat_object <- "outdata/RData/integrated_seurat.RData"
 opt$orthologs <- "outdata/RData/orthologs.RData"
 opt$output_path <- "del"
 #Load data and parsing commands
