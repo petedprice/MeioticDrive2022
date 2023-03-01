@@ -29,6 +29,7 @@ if (is.null(opt$path_to_seurat_object)){
 library(Seurat)
 library(tidyverse)
 library(Matrix)
+
 library(scales)
 library(cowplot)
 library(RCurl)
@@ -69,7 +70,7 @@ if (opt$samples != 'all'){
 }
 
 #SCT normalize the data (SCTransform also accounts for sequencing depth, 
-    #also regressing out mitochondrial percentage and cell cycle scoring)
+#also regressing out mitochondrial percentage and cell cycle scoring)
 print("SCTransform")
 split_seurat <- future_lapply(split_seurat, SCTransform, vars.to.regress = 
                                 c("mitoRatio","nUMI","S.Score","G2M.Score"))
@@ -98,8 +99,8 @@ print("first unintegrated UMAPS")
 seurat_SCT_normalised <- Reduce(merge, split_seurat)
 seurat_SCT_normalised <- RunPCA(object = seurat_SCT_normalised, features = features)
 seurat_SCT_normalised <- RunUMAP(seurat_SCT_normalised, 
-                             dims = 1:30,
-                             reduction = "pca")
+                                 dims = 1:30,
+                                 reduction = "pca")
 
 seurat_SCT_normalised <- FindNeighbors(seurat_SCT_normalised, dims = 1:30, verbose = FALSE)
 seurat_SCT_normalised <- FindClusters(seurat_SCT_normalised, verbose = FALSE)
@@ -119,7 +120,7 @@ ggsave(filename = paste(plotpath, "fs_Phase_PCA.pdf", sep = ""))
 
 
 
-#Integrate data 
+#Integrate data all samples
 print("integrating")
 seurat_integrated <- IntegrateData(anchorset = anchors, 
                                    normalization.method = "SCT", 
@@ -137,7 +138,49 @@ seurat_integrated <- FindNeighbors(object = seurat_integrated,
                                    dims = 1:40)
 seurat_integrated <- FindClusters(object = seurat_integrated,
                                   resolution = 0.4)
-#Save data
-print("saving data")
-save(split_seurat, seurat_integrated, anchors, features, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))
+
+
+#Integrarate within treatment 
+#prep data for integration 
+# Identify variable features for integrating
+print("SelectIntegrationFeatures")
+ss_names <- c('normal', 'st', 'sr')
+#split_save <- split_seurat
+split_seurat <- split_save
+split_seurat <- lapply(split_seurat, subset, nFeature_RNA > 6000)
+split_seurat_st <- split_seurat[startsWith(names(split_seurat), "st")]
+split_seurat_sr <- split_seurat[startsWith(names(split_seurat), "sr")]
+splits <- list(split_seurat, split_seurat_st, split_seurat_sr)
+names(splits) <- ss_names
+names(ss_names) <- ss_names
+features <- lapply(splits, SelectIntegrationFeatures, nfeatures = 3000, 
+                   USE.NAMES = TRUE)
+
+#Prepossessing step necessary if SCT transformed
+print("PrepSCTIntegration")
+splits <- lapply(ss_names, function(x)(return(PrepSCTIntegration(object.list = splits[[x]],  
+                                                       anchor.features = features[[x]]))))
+#Find anchors that link datasets
+print("FindIntegrationAnchors")
+anchors <- lapply(ss_names, function(x)(return(FindIntegrationAnchors(object.list = splits[[x]], 
+                                                                      anchor.features = features[[x]], 
+                                                                      normalization.method = "SCT"))))
+                  
+integrateds <- lapply(ss_names, function(x)(return(IntegrateData(anchorset = anchors[[x]], 
+                                                                 normalization.method = "SCT", 
+                                                                 features.to.integrate = 
+                                                                   unique(unlist(lapply(splits[[x]], rownames)))))))
+
+umap_tsne_pca <- function(x){
+  x <- RunPCA(object = x)
+  x <- RunTSNE(x, dims = 1:40, reduction = "pca")
+  x <- RunUMAP(x,  dims = 1:40, reduction = "pca")
+  x <- FindNeighbors(object = x, dims = 1:40)
+  x <- FindClusters(object = x, resolution = 0.4)
+}
+
+integrateds <- lapply(integrateds, umap_tsne_pca)
+sr_and_st <- merge(integrateds$st, integrateds$sr)
+
+save(anchors, splits, integrateds, features, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))
 
