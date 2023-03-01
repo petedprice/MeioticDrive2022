@@ -57,21 +57,6 @@ DEG_func <- function(c, seurat_obj, ortholog_table, s = 'customclassif'){
 markers <- readxl::read_excel("indata/markers/elife2019/elife-47138-supp1-v1.xlsx", col_names = TRUE) %>% 
   dplyr::select("Gene", "Cluster")
 
-## PREPPING DATA ----
-seurat_integrated <- RunPCA(object = seurat_integrated)
-seurat_integrated <- RunTSNE(seurat_integrated, 
-                             dims = 1:40,
-                             reduction = "pca")
-seurat_integrated <- RunUMAP(seurat_integrated, 
-                             dims = 1:40,
-                             reduction = "pca")
-
-
-seurat_integrated <- FindNeighbors(object = seurat_integrated, 
-                                   dims = 1:40)
-seurat_integrated <- FindClusters(object = seurat_integrated,
-                                  resolution = 0.4)
-
 
 markerslist <- lapply(unique(markers$Cluster), function(x)(return(markers$Gene[markers$Cluster == x])))
 names(markerslist) <- unique(markers$Cluster)
@@ -132,8 +117,8 @@ d3 <- DimPlot(seurat_integrated, reduction = 'umap', group.by = "scina_labels", 
   ggtitle("SCINA clusters")+  theme(plot.title = element_text(hjust = 0.5))
 d <- ggarrange(plotlist = list(d2,d3), nrow = 1)
 
-pdf("plots/Cell_types/SCINA_sc_type.pdf", width = 22, height = 8)
-d
+pdf("plots/Cell_types/SCINA_sc_type.pdf", width = 9, height =7.8)
+d2
 dev.off()
 
 pdf('plots/Cell_types/UMAP_pooled.pdf', width = 11, height = 8)

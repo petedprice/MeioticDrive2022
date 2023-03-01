@@ -119,7 +119,7 @@ ggsave(filename = paste(plotpath, "fs_Phase_PCA.pdf", sep = ""))
 
 
 
-#Integrate data 
+#Integrate data all samples
 print("integrating")
 seurat_integrated <- IntegrateData(anchorset = anchors, 
                                    normalization.method = "SCT", 
@@ -137,7 +137,47 @@ seurat_integrated <- FindNeighbors(object = seurat_integrated,
                                    dims = 1:40)
 seurat_integrated <- FindClusters(object = seurat_integrated,
                                   resolution = 0.4)
+
+
+#Integrarate within treatment 
+#prep data for integration 
+# Identify variable features for integrating
+print("SelectIntegrationFeatures")
+split_seurat_st <- split_seurat[startsWith(names(split_seurat), "st")]
+split_seurat_sr <- split_seurat[startsWith(names(split_seurat), "se")]
+features_st <- SelectIntegrationFeatures(object.list = split_seurat_st, nfeatures = 3000)
+features_sr <- SelectIntegrationFeatures(object.list = split_seurat_sr, nfeatures = 3000)
+
+#Prepossessing step necessary if SCT transformed
+print("PrepSCTIntegration")
+split_seurat_st <- PrepSCTIntegration(object.list = split_seurat_st, 
+                                   anchor.features = features_st)
+split_seurat_sr <- PrepSCTIntegration(object.list = split_seurat_sr, 
+                                      anchor.features = split_seurat_sr)
+
+#Find anchors that link datasets
+print("FindIntegrationAnchors")
+anchors_st <- FindIntegrationAnchors(object.list = split_seurat_st, 
+                                  anchor.features = features_st, 
+                                  normalization.method = "SCT")
+anchors_sr <- FindIntegrationAnchors(object.list = split_seurat_sr, 
+                                     anchor.features = features_sr, 
+                                     normalization.method = "SCT")
+
+
+seurat_integrated_st <- IntegrateData(anchorset = anchors_st, 
+                                   normalization.method = "SCT", 
+                                   features.to.integrate = unique(unlist(lapply(split_seurat_st, rownames))))
+
+
+seurat_integrated_sr <- IntegrateData(anchorset = anchors_sr, 
+                                      normalization.method = "SCT", 
+                                      features.to.integrate = unique(unlist(lapply(split_seurat_sr, rownames))))
+
+seurat_integrated_seperate <- merge(seurat_integrated_sr, y = seurat_integrated_st)
 #Save data
 print("saving data")
-save(split_seurat, seurat_integrated, anchors, features, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))
+save(split_seurat, seurat_integrated, anchors, features, seurat_integrated_seperate, 
+     anchors_st, anchors_sr, features_st, features_sr, split_seurat_st, 
+     split_seurat_sr, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))
 
