@@ -89,22 +89,22 @@ features <- future_lapply(splits, SelectIntegrationFeatures, nfeatures = 3000,
 
 #Prepossessing step necessary if SCT transformed
 print("PrepSCTIntegration")
-splits <- lapply(ss_names, function(x)(return(PrepSCTIntegration(object.list = splits[[x]],  
+splits <- future_lapply(ss_names, function(x)(return(PrepSCTIntegration(object.list = splits[[x]],  
                                                                  anchor.features = features[[x]]))))
 
 #Find anchors that link datasets
 print("FindIntegrationAnchors")
-anchors <- lapply(ss_names, function(x)(return(FindIntegrationAnchors(object.list = splits[[x]], 
+anchors <- future_lapply(ss_names, function(x)(return(FindIntegrationAnchors(object.list = splits[[x]], 
                                                                       anchor.features = features[[x]], 
                                                                       normalization.method = "SCT"))))
 
 ### INTEGRATING 
 print("integrating")
-integrateds <- lapply(ss_names, function(x)(return(IntegrateData(anchorset = anchors[[x]], 
+integrateds <- future_lapply(ss_names, function(x)(return(IntegrateData(anchorset = anchors[[x]], 
                                                                  normalization.method = "SCT", 
                                                                  features.to.integrate = 
                                                                    unique(unlist(lapply(splits[[x]], rownames)))))))
-seurat_SCT_normaliseds <- lapply(ss_names, function(x)(return(Reduce(merge, splits[[x]]))))
+seurat_SCT_normaliseds <- future_lapply(ss_names, function(x)(return(Reduce(merge, splits[[x]]))))
 
 umap_tsne_pca <- function(x, f = NULL){
   x <- RunPCA(object = x, features = f)
@@ -114,8 +114,8 @@ umap_tsne_pca <- function(x, f = NULL){
   x <- FindClusters(object = x, resolution = 0.4)
 }
 
-integrateds <- lapply(integrateds, umap_tsne_pca)
-seurat_SCT_normaliseds <- lapply(ss_names, function(x)(return(umap_tsne_pca(seurat_SCT_normaliseds[[x]], f = features[[x]]
+integrateds <- future_lapply(integrateds, umap_tsne_pca)
+seurat_SCT_normaliseds <- future_lapply(ss_names, function(x)(return(umap_tsne_pca(seurat_SCT_normaliseds[[x]], f = features[[x]]
                                                                             ))))
 
 save(anchors, features, seurat_SCT_normaliseds, file = paste(outdatapath, "/features_anchors_split.RData", sep = ""))
