@@ -74,105 +74,40 @@ if (opt$samples != 'all'){
 print("SCTransform")
 split_seurat <- future_lapply(split_seurat, SCTransform, vars.to.regress = 
                                 c("mitoRatio","nUMI","S.Score","G2M.Score"))
-
-
-#prep data for integration 
-# Identify variable features for integrating
-print("SelectIntegrationFeatures")
-features <- SelectIntegrationFeatures(object.list = split_seurat, nfeatures = 3000)
-
-#Prepossessing step necessary if SCT transformed
-print("PrepSCTIntegration")
-split_seurat <- PrepSCTIntegration(object.list = split_seurat, 
-                                   anchor.features = features)
-
-#Find anchors that link datasets
-print("FindIntegrationAnchors")
-anchors <- FindIntegrationAnchors(object.list = split_seurat, 
-                                  anchor.features = features, 
-                                  normalization.method = "SCT")
-
-#Initial plot making for comparisons to after integration 
-
-# Perform PCA
-print("first unintegrated UMAPS")
-seurat_SCT_normalised <- Reduce(merge, split_seurat)
-seurat_SCT_normalised <- RunPCA(object = seurat_SCT_normalised, features = features)
-seurat_SCT_normalised <- RunUMAP(seurat_SCT_normalised, 
-                                 dims = 1:30,
-                                 reduction = "pca")
-
-seurat_SCT_normalised <- FindNeighbors(seurat_SCT_normalised, dims = 1:30, verbose = FALSE)
-seurat_SCT_normalised <- FindClusters(seurat_SCT_normalised, verbose = FALSE)
-
-save(seurat_SCT_normalised, file = paste(outdatapath, "/seurat_SCT_normalised.RData", sep = ""))
-
-fs_PCA1 <- DimPlot(seurat_SCT_normalised,
-                   split.by = "sample")
-ggsave(filename = paste(plotpath, "fs_sample_PCA.pdf", sep = ""))
-fs_PCA2 <- DimPlot(seurat_SCT_normalised,
-                   split.by = "treatment")
-ggsave(filename = paste(plotpath, "fs_treatment_PCA.pdf", sep = ""))
-ggsave(filename = paste(plotpath, "fs_treatment_PCA.pdf", sep = ""))
-fs_PCA3 <- DimPlot(seurat_SCT_normalised,
-                   split.by = "Phase", group.by = "Phase")
-ggsave(filename = paste(plotpath, "fs_Phase_PCA.pdf", sep = ""))
-
-
-
-#Integrate data all samples
-print("integrating")
-seurat_integrated <- IntegrateData(anchorset = anchors, 
-                                   normalization.method = "SCT", 
-                                   features.to.integrate = unique(unlist(lapply(split_seurat, rownames))))
-seurat_integrated <- RunPCA(object = seurat_integrated)
-seurat_integrated <- RunTSNE(seurat_integrated, 
-                             dims = 1:40,
-                             reduction = "pca")
-seurat_integrated <- RunUMAP(seurat_integrated, 
-                             dims = 1:40,
-                             reduction = "pca")
-
-
-seurat_integrated <- FindNeighbors(object = seurat_integrated, 
-                                   dims = 1:40)
-seurat_integrated <- FindClusters(object = seurat_integrated,
-                                  resolution = 0.4)
-
-
-#Integrarate within treatment 
-#prep data for integration 
-# Identify variable features for integrating
-print("SelectIntegrationFeatures")
 ss_names <- c('normal', 'st', 'sr')
-#split_save <- split_seurat
-split_seurat <- split_save
-split_seurat <- lapply(split_seurat, subset, nFeature_RNA > 6000)
 split_seurat_st <- split_seurat[startsWith(names(split_seurat), "st")]
 split_seurat_sr <- split_seurat[startsWith(names(split_seurat), "sr")]
 splits <- list(split_seurat, split_seurat_st, split_seurat_sr)
 names(splits) <- ss_names
 names(ss_names) <- ss_names
-features <- lapply(splits, SelectIntegrationFeatures, nfeatures = 3000, 
+
+#prep data for integration 
+# Identify variable features for integrating
+print("SelectIntegrationFeatures")
+features <- future_lapply(splits, SelectIntegrationFeatures, nfeatures = 3000, 
                    USE.NAMES = TRUE)
 
 #Prepossessing step necessary if SCT transformed
 print("PrepSCTIntegration")
 splits <- lapply(ss_names, function(x)(return(PrepSCTIntegration(object.list = splits[[x]],  
-                                                       anchor.features = features[[x]]))))
+                                                                 anchor.features = features[[x]]))))
+
 #Find anchors that link datasets
 print("FindIntegrationAnchors")
 anchors <- lapply(ss_names, function(x)(return(FindIntegrationAnchors(object.list = splits[[x]], 
                                                                       anchor.features = features[[x]], 
                                                                       normalization.method = "SCT"))))
-                  
+
+### INTEGRATING 
+print("integrating")
 integrateds <- lapply(ss_names, function(x)(return(IntegrateData(anchorset = anchors[[x]], 
                                                                  normalization.method = "SCT", 
                                                                  features.to.integrate = 
                                                                    unique(unlist(lapply(splits[[x]], rownames)))))))
+seurat_SCT_normaliseds <- lapply(ss_names, function(x)(return(Reduce(merge, splits[[x]]))))
 
-umap_tsne_pca <- function(x){
-  x <- RunPCA(object = x)
+umap_tsne_pca <- function(x, f = NULL){
+  x <- RunPCA(object = x, features = f)
   x <- RunTSNE(x, dims = 1:40, reduction = "pca")
   x <- RunUMAP(x,  dims = 1:40, reduction = "pca")
   x <- FindNeighbors(object = x, dims = 1:40)
@@ -180,7 +115,10 @@ umap_tsne_pca <- function(x){
 }
 
 integrateds <- lapply(integrateds, umap_tsne_pca)
-sr_and_st <- merge(integrateds$st, integrateds$sr)
+seurat_SCT_normaliseds <- lapply(ss_names, function(x)(return(umap_tsne_pca(seurat_SCT_normaliseds[[x]], f = features[[x]]
+                                                                            ))))
 
-save(anchors, splits, integrateds, features, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))
+save(anchors, features, seurat_SCT_normaliseds, file = paste(outdatapath, "/features_anchors_split.RData", sep = ""))
+save(seurat_SCT_normaliseds, file = paste(outdatapath, "/SCT_normaliseds_split.RData", sep = ""))
+save(integrateds,file = paste(outdatapath, "/integrateds_split.RData", sep = ""))
 
