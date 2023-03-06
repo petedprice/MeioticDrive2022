@@ -5,6 +5,8 @@ library(HGNChelper)
 library(openxlsx)
 library(SCINA)
 library(ggpubr)
+library(scater)
+library(scuttle)
 source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/gene_sets_prepare.R"); source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/sctype_score_.R")
 # load gene set preparation function
 source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/gene_sets_prepare.R")
@@ -102,10 +104,7 @@ results = SCINA(scina.data, SCINA_markerslist,
                 rm_overlap=FALSE, allow_unknown=TRUE, log_file='SCINA.log')
 seurat_integrated$scina_labels <- results$cell_labels
 
-
 ## PLOTS ----
-
-
 d1 <- DimPlot(seurat_integrated, reduction = "umap", label = TRUE, repel = TRUE, split.by = 'treatment') + 
   ggtitle("PCA clusters") +  theme(plot.title = element_text(hjust = 0.5))
 
@@ -227,4 +226,50 @@ seurat_integrated@meta.data <- seurat_integrated@meta.data %>%
   mutate(cat = cut(complexity, 
                    c(-Inf, quantile(complexity, c(0.01, .1, .25, .5, .75, .99)), Inf), 
                    labels = c("Super Low", "Low", "lowish", "Medium", "High", "super high", "wow")))
+
+
+
+
+##### BIOCONDUCTOR DGESEQ2 -----
+library(edgeR)
+library(statmod)
+
+sce <- as.SingleCellExperiment(seurat_integrated, assay = "RNA")
+summed <- aggregateAcrossCells(sce, 
+                               id=colData(sce)[,c("treatment", "sample")])
+summed
+label = "Cyst"
+#current <- summed[,label==summed$
+                    
+                    
+                    
+              
+y <- DGEList(counts(summed), samples=colData(summed))
+discarded <- summed$ncells < 10
+y <- y[,!discarded]
+summary(discarded)
+
+keep <- filterByExpr(y, group=summed$treatment)
+y <- y[keep,]
+summary(keep)
+
+y <- calcNormFactors(y)
+y$samples
+
+par(mfrow=c(2,4))
+for (i in seq_len(ncol(y))) {
+  plotMD(y, column=i)
+}
+dev.off()
+plotMDS(cpm(y, log=TRUE), 
+        col= as.numeric(factor(y$samples$treatment)))
+
+
+design <- model.matrix(~factor(treatment), y$samples)
+y <- estimateDisp(y, design)
+summary(y$trended.dispersion)
+plotBCV(y)
+
+fit <- glmQLFit(y, design, robust=TRUE)
+summary(fit$var.prior)
 
