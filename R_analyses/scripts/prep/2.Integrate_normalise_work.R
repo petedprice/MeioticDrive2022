@@ -81,8 +81,7 @@ if (opt$samples != 'all'){
 
 ### Delete --- 
 
-#ss <- SplitObject(seurat_integrated, split.by = "sample")
-#split_seurat <- lapply(ss, function(x)(return(subset(x, nUMI > 45000))))
+split_seurat <- lapply(split_seurat, function(x)(return(subset(x, nUMI > 45000))))
 
 
 if (opt$doublet_finder == TRUE){
