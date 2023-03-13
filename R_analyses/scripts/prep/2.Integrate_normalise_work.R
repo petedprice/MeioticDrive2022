@@ -81,7 +81,7 @@ if (opt$samples != 'all'){
 
 ### Delete --- 
 
-split_seurat <- lapply(split_seurat, function(x)(return(subset(x, nUMI > 45000))))
+split_seurat <- lapply(split_seurat, function(x)(return(subset(x, nUMI > 60000))))
 
 
 if (opt$doublet_finder == TRUE){
@@ -120,7 +120,6 @@ if (opt$doublet_finder == TRUE){
     return(so)
   }
   
-  ch_df_name(split_seurat[[x]])
   split_seurat <- sapply(names(split_seurat), function(x)(return(ch_df_name(split_seurat[[x]], df_names[[x]]))))
   
   
