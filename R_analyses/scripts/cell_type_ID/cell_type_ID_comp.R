@@ -14,7 +14,7 @@ source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/gen
 source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/sctype_score_.R")
 load("data/RData/integrated_seurat.RData")
 load("outdata/RData/ortholog_table.RData")
-
+ortholog_table <- read.table("data/ortholog_table.txt")
 
 ####FUNCTIONS ----
 swap_names <- function(x, tab, srt){

@@ -142,14 +142,8 @@ ortholog_table4$comp_clusters[which(ortholog_table4$`testis-Cluster` %in%
                                       c("Early spermatocytes","Late spermatocytes") == T)] <- "Spermatocytes"
 
 
-
-
-
-
-
-
 save(ortholog_table1, ortholog_table2, ortholog_table3, ortholog_table4, file = "outdata/RData/orthologs.RData")
-
+write.table(ortholog_table4, "data/ortholog_table.txt")
 
 
 
