@@ -10,7 +10,6 @@ library(stringr)
 library(ggpubr)
 library(future)
 library(future.apply)
-remotes::install_github('chris-mcginnis-ucsf/DoubletFinder')
 library(DoubletFinder)
 library("optparse")
 
@@ -82,8 +81,8 @@ if (opt$samples != 'all'){
 
 ### Delete --- 
 
-ss <- SplitObject(seurat_integrated, split.by = "sample")
-split_seurat <- lapply(ss, function(x)(return(subset(x, nUMI > 45000))))
+#ss <- SplitObject(seurat_integrated, split.by = "sample")
+#split_seurat <- lapply(ss, function(x)(return(subset(x, nUMI > 45000))))
 
 
 if (opt$doublet_finder == TRUE){
