@@ -1,6 +1,17 @@
 #!/usr/bin/env Rscript
 ##### LIBRARIES -------
 library("optparse")
+library(SCINA)
+library(Seurat)
+library(tidyverse)
+library(Matrix)
+library(scales)
+library(cowplot)
+library(RCurl)
+library(stringr)
+library(ggpubr)
+library(future)
+library(future.apply)
 
 #SC_TYPE FUNCTIONS
 source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/gene_sets_prepare.R")
@@ -30,6 +41,16 @@ if (is.null(opt$path_to_seurat_object)){
   stop("At least one argument must be supplied (input file)", call.=FALSE)
 }
 
+#make folders
+outdatapath = paste(output_path, "/outdata", sep = "")
+dir.create(outdatapath, showWarnings = F, recursive = T)
+plotpath = paste(output_path, "/plots/", sep = "")
+dir.create(plotpath, showWarnings = F, recursive = T)
+
+#parallelise
+plan("multicore", workers = opt$threads)
+options(future.globals.maxSize = 8000 * 1024^5)
+
 ##### FUNCTIONS ----
 swap_names <- function(x, tab, srt){
   names <- unlist(lapply(x, function(g)(return(tab$TDel_GID[tab$Dros_GID == g])))) %>% 
@@ -47,38 +68,21 @@ check_subset <- function(cell, ml){
   }
 }
 
-DEG_func <- function(c, seurat_obj, ortholog_table, s = 'customclassif'){
-  if (s == "customclassif"){
-    ss_obj <- subset(seurat_obj, customclassif == c)
-  } else if (s == "scina_labels") {
-    ss_obj <- subset(seurat_obj, scina_labels == c)
-  }
-  if (length(unique(ss_obj$treatment)) < 2){
-    return(NULL)
-  } else {
-    t1 <- unique(seurat_obj$treatment)[1]
-    t2 <- unique(seurat_obj$treatment)[2]
-    DEG_test <- FindMarkers(ss_obj, ident.1 = t1, 
-                            ident.2 = t2, 
-                            logfc.threshold = log(2), 
-                            min.pct = 0.5)
-    DEG_test$DEG_comp <- c
-    DEG_test$gene <- rownames(DEG_test)
-    rownames(DEG_test) <- NULL
-    return(DEG_test)
-  }
-}
-
 
 #### DETLETE -----
 opt$path_to_seurat_object <- "data/RData/integrated_seurat.RData"
 opt$ortholog_table <- "data/ortholog_table.txt"
+opt$marker_source <- "comp_clusters"
+seurat_integrated  <- FindClusters(object = seurat_integrated, resolution = 
+                                     c(0.1, 0.2, 0.4, 0.75, 1, 1.25, 1.5, 2))
+seurat_integrated$seurat_clusters <- seurat_integrated$integrated_snn_res.0.1
+DimPlot(seurat_integrated, group.by = "integrated_snn_res.0.1")
 ###################
 
 ##### LOADING DATA ----
-load(opt$path_to_seurat_object)
-ortholog_table <- read.table(opt$ortholog_table)
-marker_source <- opt$marker_source
+#load(opt$path_to_seurat_object)
+#ortholog_table <- read.table(opt$ortholog_table)
+#marker_source <- opt$marker_source
 
 clusters <- unique(ortholog_table[,marker_source])
 clusters <- clusters[is.na(clusters) == F]
@@ -106,22 +110,18 @@ sctype_scores = cL_resutls %>% group_by(cluster) %>% top_n(n = 1, wt = scores)
 sctype_scores$type[as.numeric(as.character(sctype_scores$scores)) < sctype_scores$ncells/4] = "Unknown"
 print(sctype_scores[,1:3])
 
-
 seurat_integrated@meta.data$customclassif = ""
 for(j in unique(sctype_scores$cluster)){
   cl_type = sctype_scores[sctype_scores$cluster==j,]; 
   seurat_integrated@meta.data$customclassif[seurat_integrated@meta.data$seurat_clusters == j] = as.character(cl_type$type[1])
 }
 
-DimPlot(seurat_integrated, group.by = 'customclassif', 
-        label = T)
-
 
 #### SCINA ----
 keep_or_not <- lapply(markerslist, check_subset, ml = markerslist) %>% 
   unlist()
 SCINA_markerslist <- markerslist[keep_or_not]
-
+SCINA_markerslist <- markerslist
 
 scina.data <- as.data.frame(seurat_integrated@assays$integrated[,]) 
 
@@ -130,12 +130,26 @@ results = SCINA(scina.data, SCINA_markerslist,
                 convergence_rate = 0.999, sensitivity_cutoff = 0.9, 
                 rm_overlap=FALSE, allow_unknown=TRUE, log_file='SCINA.log')
 seurat_integrated$scina_labels <- results$cell_labels
-DimPlot(seurat_integrated, group.by = 'scina_labels', label = T)
 
 
+seurat_marker <- seurat_integrated
+seurat_marker@meta.data$marker_source <- marker_source
+d1 <- DimPlot(seurat_marker, reduction = "umap", label = TRUE, repel = TRUE, 
+              group.by = 'customclassif')  +
+  ggtitle("SC_type clusters")+  theme(plot.title = element_text(hjust = 0.5))
 
+d2 <- DimPlot(seurat_marker, reduction = 'umap', group.by = "scina_labels", label = T) +
+  ggtitle("SCINA clusters")+  theme(plot.title = element_text(hjust = 0.5))
+d <- ggarrange(plotlist = list(d1,d2), nrow = 1)
+ggsave(filename = paste(plotpath, "CELL_TYPES.pdf", sep = ""),  width = 17, height = 8.5)
 
+d1 <- DimPlot(seurat_marker, reduction = "umap", label = TRUE, repel = TRUE, 
+              group.by = 'customclassif', split.by = 'treatment')  +
+  ggtitle("SC_type clusters")+  theme(plot.title = element_text(hjust = 0.5))
+d2 <- DimPlot(seurat_marker, reduction = 'umap', group.by = "scina_labels", label = T, 
+              split.by = 'treatment') +
+  ggtitle("SCINA clusters")+  theme(plot.title = element_text(hjust = 0.5))
+d <- ggarrange(plotlist = list(d1,d2), nrow = 2)
+ggsave(filename = paste(plotpath, "CELL_TYPES_treatment_split.pdf", sep = ""),  width = 17, height = 17)
 
-
-
-
+#save(seurat_marker, file = paste(outdatapath, "/", marker_source, "_marker_seurat.RData", sep = ""))

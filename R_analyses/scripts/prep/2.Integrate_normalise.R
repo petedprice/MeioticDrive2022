@@ -197,7 +197,9 @@ seurat_integrated <- RunUMAP(seurat_integrated,
 seurat_integrated <- FindNeighbors(object = seurat_integrated, 
                                    dims = 1:40)
 seurat_integrated <- FindClusters(object = seurat_integrated,
-                                  resolution = 0.4)
+                                  resolution = c(0.1, 0.2, 0.3, 0.4, 0.5, 
+                                                 0.75, 1, 1.25, 1.5, 1.75, 2, 
+                                                 2.5, 3))
 #Save data
 print("saving data")
 save(split_seurat, seurat_integrated, anchors, features, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))
