@@ -149,7 +149,6 @@ ortholog_table4$comp_clusters[which(ortholog_table4$`testis-Cluster` %in%
 
 
 save(ortholog_table1, ortholog_table2, ortholog_table3, ortholog_table4, file = "outdata/RData/orthologs.RData")
-
-
+write.table(ortholog_table4, "data/ortholog_table.txt")
 
 

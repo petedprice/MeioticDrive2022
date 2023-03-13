@@ -16,7 +16,7 @@ load("data/RData/integrated_seurat.RData")
 load("outdata/RData/ortholog_table.RData")
 
 
-#### FUNCTIONS ----
+####FUNCTIONS ----
 swap_names <- function(x, tab, srt){
   names <- unlist(lapply(x, function(g)(return(tab$TDel_GID[tab$Dros_GID == g])))) %>% 
     gsub(pattern = "gene-", replacement = "")
