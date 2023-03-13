@@ -1,92 +1,154 @@
+devtools::install_github("statOmics/tradeSeq")
+
 library(tradeSeq)
 library(RColorBrewer)
 library(SingleCellExperiment)
 library(slingshot)
+library(Seurat)
+library(tidyverse)
+library(devtools)
+install_github('kstreet13/bioc2020trajectories')
+library(pheatmap)
+load("data/RData/integrated_seurat.RData")
+# run cell-type IDing
+siss <- subset(seurat_integrated, customclassif != 'Unknown' &
+                 integrated_snn_res.0.4 %in% c('0',1,2,3,4,5,6,7,8,9,10,11))
 
-sce <- as.SingleCellExperiment(seurat_integrated, assay = "RNA")
+dim(siss)
+dim(seurat_integrated)
 
-shuffle <- sample(ncol(sce))
+siss$new_clusters <- siss$customclassif
+#siss$new_clusters[siss$customclassif %in% c("Mature spermatids", "Early spermatids", 
+#                                            "Early spermatocytes")] <- "germ"
+DimPlot(siss, group.by = 'new_clusters', reduction = 'umap', split.by = 'treatment')
+
+sce_trad <- as.SingleCellExperiment(siss, assay = "RNA")
+
+shuffle <- sample(ncol(sce_trad))
 layout(matrix(1:2, nrow = 1))
 par(mar = c(4.5,4,1,1))
 
-plot(reducedDims(sce)$UMAP[shuffle, ],
+plot(reducedDims(sce_trad)$UMAP[shuffle, ],
      asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2",
-     col = alpha(c(1:10)[factor(colData(sce)$customclassif)][shuffle], alpha = .5))
-legend("topright", pch = 16, col = 1:10, bty = "n", 
-       legend = levels(factor(colData(sce)$customclassif)))
-plot(reducedDims(sce)$UMAP[shuffle, ], asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2", 
-     col = alpha(c(3, 4)[factor(colData(sce)$treatment)][shuffle], alpha = .5))
-legend("topright", pch = 16, col = 3:4, bty = "n", legend = levels(factor(colData(sce)$treatment)))
+     col = alpha(c(1:2)[factor(colData(sce_trad)$treatment)][shuffle], alpha = .5))
+legend("topright", pch = 16, col = 1:2, bty = "n", 
+       legend = levels(factor(colData(sce_trad)$treatment)))
+cols = 1:length(unique(colData(sce_trad)$new_clusters))
+plot(reducedDims(sce_trad)$UMAP[shuffle, ], asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2", 
+     col = alpha(cols[factor(colData(sce_trad)$new_clusters)][shuffle], alpha = .5))
+legend("topright", pch = 16, col = cols, bty = "n", legend = levels(factor(colData(sce_trad)$new_clusters)))
+
+scores <- bioc2020trajectories::imbalance_score(
+  rd = reducedDims(sce_trad)$UMAP, 
+  cl = colData(sce_trad)$treatment,
+  k = 20, smooth = 40)
 
 
-sce <- slingshot(sce, reducedDim = 'UMAP', clusterLabels = colData(sce)$customclassif,
-                 start.clus = "GSC, Early spermatogonia")
+grad <- viridis::plasma(10, begin = 0, end = 1)
+names(grad) <- levels(cut(scores$scaled_scores, breaks = 10))
+plot(reducedDims(sce_trad)$UMAP, col = grad[cut(scores$scaled_scores, breaks = 10)],
+     asp = 1, pch = 16, xlab = "UMAP-1", ylab = "UMAP-2", cex = .8)
+legend("topleft", legend = names(grad), col = grad, pch = 16, bty = "n", cex = 2 / 3)
+
+
+sce_trad <- slingshot(sce_trad, reducedDim = 'UMAP', clusterLabels = sce_trad$new_clusters,
+                 start.clus = "Epithelial cells", approx_points = 500)
 
 colors <- colorRampPalette(brewer.pal(11,'Spectral')[-6])(100)
-plotcol <- colors[cut(sce$slingPseudotime_1, breaks=100)]
+plotcol <- colors[cut(sce_trad$slingPseudotime_1, breaks=100)]
+plot(reducedDims(sce_trad)$UMAP, col = plotcol)
+lines(SlingshotDataSet(sce_trad))
 
-plot(reducedDims(sce)$UMAP, col = plotcol, pch=16, asp = 1)
-lines(SlingshotDataSet(sce), lwd=2, col='black')
+data.frame(cluster = sce_trad$new_clusters, pt = sce_trad$slingPseudotime_1, 
+           treatment = sce_trad$treatment) %>% 
+  ggplot(aes(x = pt, fill = cluster)) + geom_density(alpha = 0.2) + 
+  facet_grid(.~treatment)
 
-
-sce <- fitGAM(sce)
-ATres <- associationTest(sce)
-ti
-
-counts <- seurat_integrated@assays$RNA@counts
-sds <- SlingshotDataSet(sce)
-
-icMat <- evaluateK(counts = counts, sds = sds, k = 3:10, 
-                   nGenes = 200, verbose = T)
-
-set.seed(7)
-pseudotime <- slingPseudotime(sds, na = FALSE)
-cellWeights <- slingCurveWeights(sds)
-
-sce <- fitGAM(counts = counts, pseudotime = pseudotime, cellWeights = cellWeights,
-              nknots = 6, verbose = FALSE)
-
-table(rowData(sce)$tradeSeq$converged)
-
-assoRes <- associationTest(sce)
-head(assoRes)
-
-startRes <- startVsEndTest(sce)
-
-oStart <- order(startRes$waldStat, decreasing = TRUE)
-sigGeneStart <- names(sce)[oStart[3]]
-plotSmoothers(sce, counts, gene = sigGeneStart)
+data.frame(cluster = sce_trad$new_clusters, pt = sce_trad$slingPseudotime_1, 
+           treatment = sce_trad$treatment) %>% 
+  ggplot(aes(x = pt, fill = treatment)) + geom_density(alpha = 0.2)
 
 
+pseudotime <- slingPseudotime(sce_trad, na = FALSE)
+cellWeights <- slingCurveWeights(sce_trad)
+gois <- lapply(cell_type_DEG_output, function(x)(return(c(x$ST_bias_genes, x$SR_bias_genes)))) %>% 
+  unlist()
+gois <- c(gois, sample(rownames(sce), 81), "LOC119669221") %>% unique()
+#gois <- cell_type_DEG_output$`Mature spermatids`$ST_bias_genes
+
+
+icMat <- evaluateK(counts = as.matrix(assays(sce_trad)$counts),
+                   pseudotime = pseudotime,
+                   cellWeights = cellWeights,
+                   conditions = factor(colData(sce_trad)$treatment),
+                   nGenes = 300,
+                   k = 3:7, parallel=F)
+
+
+sce_trad_ss <- fitGAM(counts = counts(sce_trad)[gois,], 
+              pseudotime = pseudotime, 
+              cellWeights = cellWeights,
+              conditions = factor(colData(sce_trad)$treatment),
+              nknots = 5, parallel=F)
+
+rowData(sce_trad_ss)$assocRes <- associationTest(sce_trad_ss, lineages = TRUE, l2fc = log2(0.5))
+assocRes <- rowData(sce_trad_ss)$assocRes
+assocRes <- assocRes[is.na(assocRes$waldStat) == F,]
+sr_genes <-  rownames(assocRes)[
+  which(p.adjust(assocRes$pvalue_lineage1_conditionsr, "fdr") <= 0.05)
+]
+st_genes <-  rownames(assocRes)[
+  which(p.adjust(assocRes$pvalue_lineage1_conditionst, "fdr") <= 0.05)
+]
+
+yhatSmooth <- predictSmooth(sce_trad_ss, gene = st_genes, nPoints = 50, tidy = FALSE)
+heatSmooth <- pheatmap(t(scale(t(yhatSmooth[, 1:50]))),
+                       cluster_cols = FALSE,
+                       show_rownames = T, 
+                       show_colnames = T)
+ 
+
+View(filter(ortholog_table, TDel_GID %in% gois))
+plotSmoothers(sce_trad_ss, assays(sce_trad_ss)$counts, gene = "LOC119669221", alpha = 1, border = TRUE) + ggtitle("RpL40")
+
+
+condRes <- conditionTest(sce_trad_ss, l2fc = log2(2))
+condRes$padj <- p.adjust(condRes$pvalue, "fdr")
+mean(condRes$padj <= 0.05, na.rm = TRUE)
+
+conditionGenes <- rownames(condRes)[condRes$padj <= 0.05]
+conditionGenes <- conditionGenes[!is.na(conditionGenes)]
+
+oo <- order(condRes$waldStat, decreasing = TRUE)
+
+# most significant gene
+plotSmoothers(sce_trad_ss, assays(sce_trad_ss)$counts,
+              gene = rownames(assays(sce_trad_ss)$counts)[oo[1]],
+              alpha = 1, border = TRUE)
+
+# least significant gene
+plotSmoothers(sce_trad_ss, assays(sce_trad_ss)$counts,
+              gene = rownames(assays(sce_trad_ss)$counts)[oo[nrow(sce_trad_ss)]],
+              alpha = 1, border = TRUE)
 
 
 
 
 
 
-pal <- c(RColorBrewer::brewer.pal(9, "Set1"), RColorBrewer::brewer.pal(8, "Set2"))
+### based on mean smoother
+yhatSmooth <- predictSmooth(sce_trad_ss, gene = conditionGenes, nPoints = 50, tidy = FALSE)
+yhatSmoothScaled <- t(scale(t(yhatSmooth)))
+heatSmooth_TGF <- pheatmap(yhatSmoothScaled[, 51:100],
+                           cluster_cols = FALSE,
+                           show_rownames = F, show_colnames = T, main = "Standard", legend = FALSE,
+                           silent = TRUE
+)
 
+matchingHeatmap_mock <- pheatmap(yhatSmoothScaled[heatSmooth_TGF$tree_row$order, 1:50],
+                                 cluster_cols = FALSE, cluster_rows = FALSE,
+                                 show_rownames = T, show_colnames = T, main = "Drive",
+                                 legend = FALSE, silent = TRUE
+)
 
-dimred <- seurat_integrated@reductions$pca@cell.embeddings
-clustering <- seurat_integrated$seurat_clusters
-map <- setNames(1:length(unique(clustering)), unique(clustering))
-clustering <- map[clustering] %>% as.numeric()
-
-counts <- as.matrix(seurat_integrated@assays$RNA@counts[seurat_integrated@assays$RNA@var.features, ])
-lineages <- SlingshotDataSet(getLineages(data = dimred, clusterLabels = clustering, 
-                                         start.clus = 6))
-plot(dimred[, 1:2], col = pal[as.numeric(clustering)], cex = 0.5, pch = 16)
-lines(lineages, lwd = 3, col = "black")
-for (i in unique(clustering)) {
-  text(mean(dimred[clustering == i, 1]), mean(dimred[clustering == i, 2]), labels = i, font = 2, col = 'white')
-}
-
-curves <- getCurves(lineages, approx_points = 300, thresh = 0.01, stretch = 0.8, allow.breaks = FALSE, shrink = 0.99)
-plot(dimred, col = pal[clustering], asp = 1, pch = 16)
-lines(SlingshotDataSet(curves), lwd = 3, col = "black")
-
-pdf("del2.pdf")
-DoHeatmap(seurat_integrated, features = seurat_integrated@assays$integrated@var.features[1:200], 
-          group.by = 'scina_labels')
-dev.off()
-
+grid.arrange(heatSmooth_TGF[[4]], matchingHeatmap_mock[[4]], ncol = 2)

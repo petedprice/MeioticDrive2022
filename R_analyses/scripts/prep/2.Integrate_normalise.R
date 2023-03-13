@@ -36,6 +36,7 @@ library(stringr)
 library(ggpubr)
 library(future)
 library(future.apply)
+library(DoubletFinder)
 
 #Load data and parsing commands
 output_path <- opt$output_path
@@ -52,6 +53,11 @@ dir.create(plotpath, showWarnings = F, recursive = T)
 #parallelise
 plan("multicore", workers = opt$threads)
 options(future.globals.maxSize = 8000 * 1024^5)
+
+### DOUBLETFINDER ----
+split_seurat <- SplitObject(filtered_seurat, split.by = "sample")
+split_seurat <- future_lapply(split_seurat, SCTransform)
+
 
 #Cell cycle scoring 
 filtered_seurat <- CellCycleScoring(filtered_seurat, 

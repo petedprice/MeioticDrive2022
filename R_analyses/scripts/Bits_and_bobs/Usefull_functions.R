@@ -48,3 +48,9 @@ make_plots_function <- function(x, plotpath, name = "metadata_QC"){
 
 }
 
+
+
+marker_gene <- function(seurat_object){
+  
+}
+
