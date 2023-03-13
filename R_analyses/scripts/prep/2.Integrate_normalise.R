@@ -13,7 +13,6 @@ library(future.apply)
 library(DoubletFinder)
 library("optparse")
 
-dirname(sys.frame(1)$ofile)
 
 ###### SETTING UP INPUT COMMANDS ----
 option_list = list(
