@@ -35,6 +35,7 @@ option_list = list(
 
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
+output_path <- opt$output_path
 
 if (is.null(opt$path_to_seurat_object)){
   print_help(opt_parser)
