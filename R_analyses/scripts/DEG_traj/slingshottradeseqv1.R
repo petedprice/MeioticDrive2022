@@ -142,6 +142,8 @@ plotSmoothers(sce_trad_ss, assays(sce_trad_ss)$counts,
 
 
 
+
+
 ### based on mean smoother
 yhatSmooth <- predictSmooth(sce_trad_ss, gene = conditionGenes, nPoints = 50, tidy = FALSE)
 yhatSmoothScaled <- t(scale(t(yhatSmooth)))
