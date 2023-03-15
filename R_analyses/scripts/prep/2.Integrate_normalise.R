@@ -202,5 +202,6 @@ seurat_integrated <- FindClusters(object = seurat_integrated,
                                                  2.5, 3))
 #Save data
 print("saving data")
-save(split_seurat, seurat_integrated, anchors, features, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))
+save(seurat_integrated, file = paste(outdatapath, "/integrated_seurat.RData", sep = ""))
+save(split_seurat, anchors, features, file = paste(outdatapath, "/integrated_seurat_extras.RData", sep = ""))
 

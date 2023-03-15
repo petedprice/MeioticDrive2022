@@ -81,7 +81,7 @@ check_subset <- function(cell, ml){
 
 ##### LOADING DATA ----
 load(opt$path_to_seurat_object)
-seurat_integrated$seurat_clusters <- seurat_integrated$integrated_snn_res.0.1
+seurat_integrated$seurat_clusters <- seurat_integrated$integrated_snn_res.0.4
 ortholog_table <- read.table(opt$ortholog_table)
 marker_source <- opt$marker_source
 clusters <- unique(ortholog_table[,marker_source])
