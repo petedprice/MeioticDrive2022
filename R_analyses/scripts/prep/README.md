@@ -32,9 +32,9 @@ Rscript 1.filtering.R \
 ```
 #### Commands
 
--m Where the github respository is located
--d Where your filtered cellranger data is stored 
--o Where you want your output data (plots and RData) to be saved
+-m Where the github respository is located \
+-d Where your filtered cellranger data is stored \
+-o Where you want your output data (plots and RData) to be saved \
 
 #### Description 
 Filters 10X data using  
@@ -59,11 +59,11 @@ Rscript 2.Integrate_normalise.R \
 	-c /home/bop20pp/software/MeioticDrive2022/R_analyses/data/cell_cycle_markers_complete.csv
 ```
 #### Commands
--d Location of RData containing filtered seurat object from (1)
--o Where you want your output data (plots and RData) to be saved
--t number of threads (default=1)
--s txt file containing samples to keep in the analysis (Example see R_analyses/data/samples.txt)
--c csv file containing cell cycle markers (Example see R_analyses/data/cell_cycle_markers_complete.csv)
+-d Location of RData containing filtered seurat object from (1) \
+-o Where you want your output data (plots and RData) to be saved \
+-t number of threads (default=1) \
+-s txt file containing samples to keep in the analysis (Example see R_analyses/data/samples.txt) \
+-c csv file containing cell cycle markers (Example see R_analyses/data/cell_cycle_markers_complete.csv) \
 
 #### Description  
 1. Removes doublets 
@@ -86,11 +86,11 @@ Rscript 3.cell_type_ID.R \
 	-l /home/bop20pp/software/MeioticDrive2022/R_analyses/data/ortholog_table.txt 
 ```
 #### Commands
--d Location of RData containing integrated, clustered seurat object from (2)
--o Where you want your output data (plots and RData) to be saved
--t number of threads (default=1)
--l Location of txt file matrix containing ortholog information including marker genes (Example see R_analyses/data/ortholog_table.txt)
--s Which marker source to use (i.e. which column in ortholog_table.txt to use, refering to particular paper markers were sourced from) (default=testis.Cluster, Witt et al 2019 compiled clusters)
+-d Location of RData containing integrated, clustered seurat object from (2) \
+-o Where you want your output data (plots and RData) to be saved \
+-t number of threads (default=1) \
+-l Location of txt file matrix containing ortholog information including marker genes \(Example see R_analyses/data/ortholog_table.txt)
+-s Which marker source to use (i.e. which column in ortholog_table.txt to use, refering to particular paper markers were sourced from) (default=testis.Cluster, Witt et al 2019 compiled clusters) \
 
 #### Description  
 1. Sets deafult resolution to 0.4 for clustering
