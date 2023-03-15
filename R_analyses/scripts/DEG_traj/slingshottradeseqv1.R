@@ -1,5 +1,4 @@
 devtools::install_github("statOmics/tradeSeq")
-
 library(tradeSeq)
 library(RColorBrewer)
 library(SingleCellExperiment)
@@ -9,13 +8,15 @@ library(tidyverse)
 library(devtools)
 install_github('kstreet13/bioc2020trajectories')
 library(pheatmap)
-load("data/RData/integrated_seurat.RData")
-# run cell-type IDing
-siss <- subset(seurat_integrated, customclassif != 'Unknown' &
-                 integrated_snn_res.0.4 %in% c('0',1,2,3,4,5,6,7,8,9,10,11))
 
-dim(siss)
-dim(seurat_integrated)
+load("data/RData/testis.Cluster_marker_seurat.RData")
+load("data/DEG.RData")
+ortholog_table <- read.table("data/ortholog_table.txt")
+
+# run cell-type IDing
+#siss <- subset(seurat_integrated, customclassif != 'Unknown' &
+#                 integrated_snn_res.0.4 %in% c('0',1,2,3,4,5,6,7,8,9,10,11))
+siss <- subset(seurat_marker, customclassif != 'Unknown')
 
 siss$new_clusters <- siss$customclassif
 #siss$new_clusters[siss$customclassif %in% c("Mature spermatids", "Early spermatids", 
@@ -71,9 +72,12 @@ data.frame(cluster = sce_trad$new_clusters, pt = sce_trad$slingPseudotime_1,
 
 pseudotime <- slingPseudotime(sce_trad, na = FALSE)
 cellWeights <- slingCurveWeights(sce_trad)
-gois <- lapply(cell_type_DEG_output, function(x)(return(c(x$ST_bias_genes, x$SR_bias_genes)))) %>% 
-  unlist()
-gois <- c(gois, sample(rownames(sce), 81), "LOC119669221") %>% unique()
+gois <- lapply(cell_type_DEG_output, function(x)(return(c(x$ST_bias_genes$geneID, 
+                                                          x$SR_bias_genes$geneID)))) %>% 
+  unlist() %>% unique()
+null <- sample(rownames(sce)[(rownames(sce) %in% gois) == F], length(gois))
+gois_null <- c(gois, null)
+length(gois_null)
 #gois <- cell_type_DEG_output$`Mature spermatids`$ST_bias_genes
 
 
@@ -81,11 +85,11 @@ icMat <- evaluateK(counts = as.matrix(assays(sce_trad)$counts),
                    pseudotime = pseudotime,
                    cellWeights = cellWeights,
                    conditions = factor(colData(sce_trad)$treatment),
-                   nGenes = 300,
-                   k = 3:7, parallel=F)
+                   nGenes = 100,
+                   k = 4:5, parallel=F)
 
-
-sce_trad_ss <- fitGAM(counts = counts(sce_trad)[gois,], 
+counts <- counts(sce_trad)[which(rowSums(counts(sce_trad)) != 0),]
+sce_trad_ss <- fitGAM(counts = counts[gois_null,], 
               pseudotime = pseudotime, 
               cellWeights = cellWeights,
               conditions = factor(colData(sce_trad)$treatment),
@@ -94,6 +98,7 @@ sce_trad_ss <- fitGAM(counts = counts(sce_trad)[gois,],
 rowData(sce_trad_ss)$assocRes <- associationTest(sce_trad_ss, lineages = TRUE, l2fc = log2(0.5))
 assocRes <- rowData(sce_trad_ss)$assocRes
 assocRes <- assocRes[is.na(assocRes$waldStat) == F,]
+
 sr_genes <-  rownames(assocRes)[
   which(p.adjust(assocRes$pvalue_lineage1_conditionsr, "fdr") <= 0.05)
 ]
@@ -101,8 +106,9 @@ st_genes <-  rownames(assocRes)[
   which(p.adjust(assocRes$pvalue_lineage1_conditionst, "fdr") <= 0.05)
 ]
 
-yhatSmooth <- predictSmooth(sce_trad_ss, gene = st_genes, nPoints = 50, tidy = FALSE)
-heatSmooth <- pheatmap(t(scale(t(yhatSmooth[, 1:50]))),
+yhatSmooth <- predictSmooth(sce_trad_ss, gene = nulls, nPoints = 50, tidy = FALSE)
+yhatSmooth <- yhatSmooth[is.na(yhatSmooth[,1]) == FALSE,]
+heatSmooth <- pheatmap(t(scale(t(yhatSmooth))),
                        cluster_cols = FALSE,
                        show_rownames = T, 
                        show_colnames = T)
