@@ -73,7 +73,7 @@ check_subset <- function(cell, ml){
 #### DETLETE -----
 #opt$path_to_seurat_object <- "data/RData/integrated_seurat.RData"
 #opt$ortholog_table <- "data/ortholog_table.txt"
-opt$marker_source <- "comp_clusters"
+#opt$marker_source <- "comp_clusters"
 ##seurat_integrated  <- FindClusters(object = seurat_integrated, resolution = 
 #                                     c(0.1, 0.2, 0.4, 0.75, 1, 1.25, 1.5, 2))
 #DimPlot(seurat_integrated, group.by = "integrated_snn_res.0.1")
