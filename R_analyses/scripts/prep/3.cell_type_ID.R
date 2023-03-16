@@ -73,8 +73,8 @@ check_subset <- function(cell, ml){
 #### DETLETE -----
 #opt$path_to_seurat_object <- "data/RData/integrated_seurat.RData"
 #opt$ortholog_table <- "data/ortholog_table.txt"
-#opt$marker_source <- "comp_clusters"
-#seurat_integrated  <- FindClusters(object = seurat_integrated, resolution = 
+opt$marker_source <- "comp_clusters"
+##seurat_integrated  <- FindClusters(object = seurat_integrated, resolution = 
 #                                     c(0.1, 0.2, 0.4, 0.75, 1, 1.25, 1.5, 2))
 #DimPlot(seurat_integrated, group.by = "integrated_snn_res.0.1")
 ###################
@@ -110,10 +110,10 @@ sctype_scores = cL_resutls %>% group_by(cluster) %>% top_n(n = 1, wt = scores)
 sctype_scores$type[as.numeric(as.character(sctype_scores$scores)) < sctype_scores$ncells/4] = "Unknown"
 print(sctype_scores[,1:3])
 
-seurat_integrated@meta.data$customclassif = ""
+seurat_integrated@meta.data$sctype_labels = ""
 for(j in unique(sctype_scores$cluster)){
   cl_type = sctype_scores[sctype_scores$cluster==j,]; 
-  seurat_integrated@meta.data$customclassif[seurat_integrated@meta.data$seurat_clusters == j] = as.character(cl_type$type[1])
+  seurat_integrated@meta.data$sctype_labels[seurat_integrated@meta.data$seurat_clusters == j] = as.character(cl_type$type[1])
 }
 
 
@@ -135,7 +135,7 @@ seurat_integrated$scina_labels <- results$cell_labels
 seurat_marker <- seurat_integrated
 seurat_marker@meta.data$marker_source <- marker_source
 d1 <- DimPlot(seurat_marker, reduction = "umap", label = TRUE, repel = TRUE, 
-              group.by = 'customclassif')  +
+              group.by = 'sctype_labels')  +
   ggtitle("SC_type clusters")+  theme(plot.title = element_text(hjust = 0.5))
 
 d2 <- DimPlot(seurat_marker, reduction = 'umap', group.by = "scina_labels", label = T) +
@@ -144,7 +144,7 @@ d <- ggarrange(plotlist = list(d1,d2), nrow = 1)
 ggsave(filename = paste(plotpath, "CELL_TYPES.pdf", sep = ""),  width = 17, height = 8.5)
 
 d1 <- DimPlot(seurat_marker, reduction = "umap", label = TRUE, repel = TRUE, 
-              group.by = 'customclassif', split.by = 'treatment')  +
+              group.by = 'sctype_labels', split.by = 'treatment')  +
   ggtitle("SC_type clusters")+  theme(plot.title = element_text(hjust = 0.5))
 d2 <- DimPlot(seurat_marker, reduction = 'umap', group.by = "scina_labels", label = T, 
               split.by = 'treatment') +
