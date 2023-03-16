@@ -90,7 +90,7 @@ Rscript 3.cell_type_ID.R \
 -o Where you want your output data (plots and RData) to be saved \
 -t number of threads (default=1) \
 -l Location of txt file matrix containing ortholog information including marker genes \(Example see R_analyses/data/ortholog_table.txt) \
--s Which marker source to use (i.e. which column in ortholog_table.txt to use, refering to particular paper markers were sourced from) (default=testis.Cluster, Witt et al 2019 compiled clusters)
+-s Which marker source to use (i.e. which column in ortholog_table.txt to use, refering to particular paper markers were sourced from) (default=comp_clusters, combination of Witt et al 2019 compiled clusters and the single-cell atlas)
 
 #### Description  
 1. Sets deafult resolution to 0.4 for clustering

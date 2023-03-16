@@ -27,7 +27,7 @@ option_list = list(
               help="number of threads for parallelising", metavar="numeric"),
   make_option(c("-l", "--ortholog_table"), type="character", default="/home/bop20pp/software/MeioticDrive2022/R_analyses/data/ortholog_table.txt", 
               help="path to dataframe containing ortholog information", metavar="character"),
-  make_option(c("-s", "--marker_source"), type="character", default="testis.Cluster", 
+  make_option(c("-s", "--marker_source"), type="character", default="comp_clusters", 
               help="which markers to use for classifying cell types. Column name from ortholog_table.", metavar="character")
   
 )

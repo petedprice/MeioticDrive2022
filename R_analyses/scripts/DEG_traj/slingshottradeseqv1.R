@@ -89,13 +89,14 @@ icMat <- evaluateK(counts = as.matrix(assays(sce_trad)$counts),
                    k = 4:5, parallel=F)
 
 counts <- counts(sce_trad)[which(rowSums(counts(sce_trad)) != 0),]
+
 sce_trad_ss <- fitGAM(counts = counts[gois_null,], 
               pseudotime = pseudotime, 
               cellWeights = cellWeights,
               conditions = factor(colData(sce_trad)$treatment),
               nknots = 5, parallel=F)
 
-rowData(sce_trad_ss)$assocRes <- associationTest(sce_trad_ss, lineages = TRUE, l2fc = log2(0.5))
+rowData(sce_trad_ss)$assocRes <- associationTest(sce_trad_ss, lineages = F, l2fc = log2(0.5))
 assocRes <- rowData(sce_trad_ss)$assocRes
 assocRes <- assocRes[is.na(assocRes$waldStat) == F,]
 
