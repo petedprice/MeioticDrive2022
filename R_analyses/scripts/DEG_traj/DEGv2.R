@@ -15,6 +15,9 @@ library(ggpubr)
 library(gridExtra)
 library(tidyverse)
 library(data.table)
+library("biomaRt")
+library(clusterProfiler)
+
 
 
 load("data/RData/testis.Cluster_marker_seurat.RData")
@@ -97,7 +100,6 @@ bulk_DEG_output <- make_pca_function(de.results_wt$bulk)
 agg_cell_types <- aggregateAcrossCells(sce, id=colData(sce)[,c("customclassif", "sample")])
 agg_cell_types <- agg_cell_types[,agg_cell_types$ncells >= 10]
 
-
 y <- DGEList(counts(agg_cell_types), samples=colData(agg_cell_types))
 keep <- filterByExpr(y, group=agg_cell_types$treatment)
 y <- y[keep,]
@@ -141,4 +143,65 @@ dev.off()
 
 save(cell_type_DEG_output, de.results_act, file = "data/DEG.RData")
 
-read.table("data")
+
+#### CHECK CELLTYPE ABUNDANCE DIFFERENCES ----
+seurat_marker@meta.data$germ <- "SOMATIC"
+seurat_marker@meta.data$germ[seurat_marker$sctype_labels == 'Unknown'] <- "unknown"
+seurat_marker@meta.data$germ[seurat_marker@meta.data$sctype_labels %in% 
+                               c("Spermatids", "Spermatocytes", "GSC, Early spermatogonia")] <- 
+  "GERM"
+
+cell_type_abundances_summary <- seurat_marker@meta.data %>% 
+  dplyr::count(treatment, germ) %>% 
+  spread(germ,n) %>% 
+  column_to_rownames(var = "treatment") %>% 
+  dplyr::select(-unknown) %>% 
+  chisq.test()
+
+
+cell_type_abundances_summary$residuals
+
+
+#### GO TERM ENRICHMENT ----
+gois <- lapply(cell_type_DEG_output, function(x)(return(c(x$ST_bias_genes$geneID, 
+                                                          x$SR_bias_genes$geneID)))) %>% 
+  unlist() %>% unique()
+gois_markers <- c(gois, markers)
+gois_dros <- filter(ortholog_table, TDel_GID %in% gois_markers & 
+                      is.na(Dros_GID) == FALSE)$Dros_GID %>% 
+  unique()
+gois_dros <- filter(ortholog_table, is.na(comp_clusters) == FALSE)$Dros_GID %>% 
+  unique()
+ensembl = useDataset("dmelanogaster_gene_ensembl",mart=ensembl)
+View(listAttributes(ensembl))
+
+a <- getBM(attributes=c('external_gene_name', 'go_id', 'definition_1006', 'external_synonym', 
+                        'name_1006', 'description', 'entrezgene_id', 
+                        'flybase_gene_id'), 
+           mart = ensembl, 
+           values = gois_dros, 
+           filters = 'external_gene_name')
+View(a)
+#BiocManager::install("org.Dm.eg.db")
+func_enrich <- enrichGO(gene = unique(a$entrezgene_id), 
+         OrgDb = org.Dm.eg.db, 
+         pvalueCutoff = 0.1)
+
+func_enrich
+ora_analysis_bp_simplified <- clusterProfiler::simplify(func_enrich) 
+dotplot(ora_analysis_bp_simplified)
+ora_analysis_bp <- pairwise_termsim(ora_analysis_bp, method = "JC")
+emapplot(ora_analysis_bp, color = "qvalue")
+
+
+func_enrich <- enrichKEGG(gene = unique(a$entrezgene_id), 
+                        organism = 'dme', 
+                        keyType = "ncbi-geneid")
+func_enrich
+dotplot(func_enrich, 
+        color = "qvalue", 
+        showCategory = 10, 
+        size = "Count")
+
+
+

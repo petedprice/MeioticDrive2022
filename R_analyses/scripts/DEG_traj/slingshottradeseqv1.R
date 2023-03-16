@@ -16,9 +16,9 @@ ortholog_table <- read.table("data/ortholog_table.txt")
 # run cell-type IDing
 #siss <- subset(seurat_integrated, customclassif != 'Unknown' &
 #                 integrated_snn_res.0.4 %in% c('0',1,2,3,4,5,6,7,8,9,10,11))
-siss <- subset(seurat_marker, customclassif != 'Unknown')
+siss <- subset(seurat_marker, sctype_labels != 'Unknown')
 
-siss$new_clusters <- siss$customclassif
+siss$new_clusters <- siss$sctype_labels
 #siss$new_clusters[siss$customclassif %in% c("Mature spermatids", "Early spermatids", 
 #                                            "Early spermatocytes")] <- "germ"
 DimPlot(siss, group.by = 'new_clusters', reduction = 'umap', split.by = 'treatment')
@@ -60,14 +60,22 @@ plotcol <- colors[cut(sce_trad$slingPseudotime_1, breaks=100)]
 plot(reducedDims(sce_trad)$UMAP, col = plotcol)
 lines(SlingshotDataSet(sce_trad))
 
-data.frame(cluster = sce_trad$new_clusters, pt = sce_trad$slingPseudotime_1, 
-           treatment = sce_trad$treatment) %>% 
-  ggplot(aes(x = pt, fill = cluster)) + geom_density(alpha = 0.2) + 
+sum_data <- data.frame(cluster = sce_trad$new_clusters, pt = sce_trad$slingPseudotime_1, 
+           treatment = sce_trad$treatment, 
+           germ = sce_trad$germ)
+
+sum_data %>% 
+  ggplot(aes(x = pt, fill = germ)) + geom_density(alpha = 0.2) + 
   facet_grid(.~treatment)
 
-data.frame(cluster = sce_trad$new_clusters, pt = sce_trad$slingPseudotime_1, 
-           treatment = sce_trad$treatment) %>% 
+sum_data %>% 
   ggplot(aes(x = pt, fill = treatment)) + geom_density(alpha = 0.2)
+
+sum_data %>% 
+  ggplot(aes(x = pt, fill = treatment, colour = germ)) + geom_density(alpha = 0.2)
+
+sum_data %>% 
+  ggplot(aes(x = pt, fill = treatment, colour = germ)) + geom_density(alpha = 0.2)
 
 
 pseudotime <- slingPseudotime(sce_trad, na = FALSE)
@@ -75,10 +83,14 @@ cellWeights <- slingCurveWeights(sce_trad)
 gois <- lapply(cell_type_DEG_output, function(x)(return(c(x$ST_bias_genes$geneID, 
                                                           x$SR_bias_genes$geneID)))) %>% 
   unlist() %>% unique()
+markers <- ortholog_table$TDel_GID[is.na(ortholog_table$comp_clusters) == FALSE]
 null <- sample(rownames(sce)[(rownames(sce) %in% gois) == F], length(gois))
-gois_null <- c(gois, null)
+gois_null <- c(gois, null, markers) %>% unique()
 length(gois_null)
 #gois <- cell_type_DEG_output$`Mature spermatids`$ST_bias_genes
+#gois_null <- c('LOC119669221', 'LOC119683206', 'LOC119681754', 
+#  'LOC119677649', 'LOC119677648')
+
 
 ### ASSESSING NUMBER OF KNOTS TO USE FOR MODEL 
 icMat <- evaluateK(counts = as.matrix(assays(sce_trad)$counts),
@@ -89,7 +101,7 @@ icMat <- evaluateK(counts = as.matrix(assays(sce_trad)$counts),
                    k = 4:5, parallel=F)
 
 counts <- counts(sce_trad)[which(rowSums(counts(sce_trad)) != 0),]
-
+gois_null <- intersect(rownames(counts), gois_null)
 #### FITTING GAM MODEL 
 sce_trad_ss <- fitGAM(counts = counts[gois_null,], 
               pseudotime = pseudotime, 
@@ -127,28 +139,12 @@ heatSmooth <- pheatmap(t(scale(t(yhatSmooth[, 1:50]))),
                        show_rownames = T, 
                        show_colnames = T)
  
-cl <- sort(cutree(heatSmooth$tree_row, k = 6))
-table(cl)
 
-conditions <- colData(sce_trad_ss)$tradeSeq$conditions
-pt1 <- colData(sce_trad_ss)$slingshot$pseudotime
-
-### based on fitted values (plotting takes a while to run)
-yhatCell <- predictCells(sce, gene=mockGenes)
-yhatCellMock <- yhatCell[,conditions == "Mock"]
-# order according to pseudotime
-ooMock <- order(pt1[conditions == "Mock"], decreasing=FALSE)
-yhatCellMock <- yhatCellMock[,ooMock]
-pheatmap(t(scale(t(yhatCellMock))), cluster_cols = FALSE,
-         show_rownames = FALSE, show_colnames=FALSE)
-
-
-plotSmoothers(sce_trad_ss, assays(sce_trad_ss)$counts, gene = "LOC119669221", alpha = 1, border = TRUE) + ggtitle("RpL40")
-
-
+### TESTING FOR DIFFERENTIAL EXPRESSION BETWEEN TREATMENTS ----
 condRes <- conditionTest(sce_trad_ss, l2fc = log2(2))
 condRes$padj <- p.adjust(condRes$pvalue, "fdr")
 mean(condRes$padj <= 0.05, na.rm = TRUE)
+sum(condRes$padj <= 0.05, na.rm = TRUE)
 
 conditionGenes <- rownames(condRes)[condRes$padj <= 0.05]
 conditionGenes <- conditionGenes[!is.na(conditionGenes)]
@@ -166,22 +162,17 @@ plotSmoothers(sce_trad_ss, assays(sce_trad_ss)$counts,
               alpha = 1, border = TRUE)
 
 
-
-
-
-
-
-
+##### HEATMAPS OF GENES DE BETWEEN CONDITIONS -----
 ### based on mean smoother
 yhatSmooth <- predictSmooth(sce_trad_ss, gene = conditionGenes, nPoints = 50, tidy = FALSE)
 yhatSmoothScaled <- t(scale(t(yhatSmooth)))
-heatSmooth_TGF <- pheatmap(yhatSmoothScaled[, 51:100],
+heatSmooth_ST <- pheatmap(yhatSmoothScaled[, 51:100],
                            cluster_cols = FALSE,
                            show_rownames = F, show_colnames = T, main = "Standard", legend = FALSE,
                            silent = TRUE
 )
 
-matchingHeatmap_mock <- pheatmap(yhatSmoothScaled[heatSmooth_TGF$tree_row$order, 1:50],
+matchingHeatmap_SR <- pheatmap(yhatSmoothScaled[heatSmooth_TGF$tree_row$order, 1:50],
                                  cluster_cols = FALSE, cluster_rows = FALSE,
                                  show_rownames = T, show_colnames = T, main = "Drive",
                                  legend = FALSE, silent = TRUE
