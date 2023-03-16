@@ -80,7 +80,7 @@ gois_null <- c(gois, null)
 length(gois_null)
 #gois <- cell_type_DEG_output$`Mature spermatids`$ST_bias_genes
 
-
+### ASSESSING NUMBER OF KNOTS TO USE FOR MODEL 
 icMat <- evaluateK(counts = as.matrix(assays(sce_trad)$counts),
                    pseudotime = pseudotime,
                    cellWeights = cellWeights,
@@ -90,15 +90,23 @@ icMat <- evaluateK(counts = as.matrix(assays(sce_trad)$counts),
 
 counts <- counts(sce_trad)[which(rowSums(counts(sce_trad)) != 0),]
 
+#### FITTING GAM MODEL 
 sce_trad_ss <- fitGAM(counts = counts[gois_null,], 
               pseudotime = pseudotime, 
               cellWeights = cellWeights,
               conditions = factor(colData(sce_trad)$treatment),
               nknots = 5, parallel=F)
 
-rowData(sce_trad_ss)$assocRes <- associationTest(sce_trad_ss, lineages = F, l2fc = log2(0.5))
+
+
+## Testing for differentially expressed genes as a function of pseudotime
+rowData(sce_trad_ss)$assocRes <- associationTest(sce_trad_ss, lineages = T, l2fc = log2(0.5))
 assocRes <- rowData(sce_trad_ss)$assocRes
 assocRes <- assocRes[is.na(assocRes$waldStat) == F,]
+
+assocRes %>% 
+  ggplot(aes(x = pvalue_lineage1_conditionst, y = pvalue_lineage1_conditionsr)) + 
+  geom_point()
 
 sr_genes <-  rownames(assocRes)[
   which(p.adjust(assocRes$pvalue_lineage1_conditionsr, "fdr") <= 0.05)
@@ -107,15 +115,34 @@ st_genes <-  rownames(assocRes)[
   which(p.adjust(assocRes$pvalue_lineage1_conditionst, "fdr") <= 0.05)
 ]
 
-yhatSmooth <- predictSmooth(sce_trad_ss, gene = nulls, nPoints = 50, tidy = FALSE)
+#plot unique and overlap of genes that are DE across pseudotime between treatments. 
+UpSetR::upset(fromList(list(st = st_genes, sr = sr_genes)))
+
+
+
+yhatSmooth <- predictSmooth(sce_trad_ss, gene = st_genes, nPoints = 50, tidy = FALSE)
 yhatSmooth <- yhatSmooth[is.na(yhatSmooth[,1]) == FALSE,]
-heatSmooth <- pheatmap(t(scale(t(yhatSmooth))),
+heatSmooth <- pheatmap(t(scale(t(yhatSmooth[, 1:50]))),
                        cluster_cols = FALSE,
                        show_rownames = T, 
                        show_colnames = T)
  
+cl <- sort(cutree(heatSmooth$tree_row, k = 6))
+table(cl)
 
-View(filter(ortholog_table, TDel_GID %in% gois))
+conditions <- colData(sce_trad_ss)$tradeSeq$conditions
+pt1 <- colData(sce_trad_ss)$slingshot$pseudotime
+
+### based on fitted values (plotting takes a while to run)
+yhatCell <- predictCells(sce, gene=mockGenes)
+yhatCellMock <- yhatCell[,conditions == "Mock"]
+# order according to pseudotime
+ooMock <- order(pt1[conditions == "Mock"], decreasing=FALSE)
+yhatCellMock <- yhatCellMock[,ooMock]
+pheatmap(t(scale(t(yhatCellMock))), cluster_cols = FALSE,
+         show_rownames = FALSE, show_colnames=FALSE)
+
+
 plotSmoothers(sce_trad_ss, assays(sce_trad_ss)$counts, gene = "LOC119669221", alpha = 1, border = TRUE) + ggtitle("RpL40")
 
 

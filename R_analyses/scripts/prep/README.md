@@ -1,9 +1,9 @@
 ## R Libraries
-optparse, SCINA, Seurat, tidyverse, Matrix, scales, cowplot, RCurl, stringr, ggpubr, future, future.apply, DoubletFinder
+optparse, SCINA, Seurat, tidyverse, Matrix, scales, cowplot, RCurl, stringr, ggpubr, future, future.apply, DoubletFinder, remotes
 
 
 ## First create a conda environment with the relevant packages 
-conda create -n seurat -c bioconda -c conda-forge r-seurat r-base r-optparse r-tidyverse r-matrix r-scales r-cowplot r-rcurl r-stringr r-ggpubr r-scina
+conda create -n seurat -c bioconda -c conda-forge r-seurat r-base r-optparse r-tidyverse r-matrix r-scales r-cowplot r-rcurl r-stringr r-ggpubr r-scina r-remotes
 
 Activate the conda env
 ```
