@@ -1,0 +1,90 @@
+
+OrthoFinder version 2.5.5 Copyright (C) 2014 David Emms
+
+2023-12-21 12:52:44 : Starting OrthoFinder 2.5.5
+64 thread(s) for highly parallel tasks (BLAST searches etc.)
+8 thread(s) for OrthoFinder algorithm
+
+Checking required programs are installed
+----------------------------------------
+Test can run "mcl -h" - ok
+Test can run "fastme -i /mnt/parscratch/users/bop20pp/Drive/ref_genome/helix/orthofinder/OrthoFinder/Results_Dec21_1/WorkingDirectory/dependencies/SimpleTest.phy -o /mnt/parscratch/users/bop20pp/Drive/ref_genome/helix/orthofinder/OrthoFinder/Results_Dec21_1/WorkingDirectory/dependencies/SimpleTest.tre" - ok
+
+Dividing up work for BLAST for parallel processing
+--------------------------------------------------
+2023-12-21 12:52:44 : Creating diamond database 1 of 2
+2023-12-21 12:52:44 : Creating diamond database 2 of 2
+
+Running diamond all-versus-all
+------------------------------
+Using 64 thread(s)
+2023-12-21 12:52:44 : This may take some time....
+2023-12-21 12:54:43 : Done all-versus-all sequence search
+
+Running OrthoFinder algorithm
+-----------------------------
+2023-12-21 12:54:43 : Initial processing of each species
+2023-12-21 12:54:44 : Initial processing of species 1 complete
+2023-12-21 12:54:45 : Initial processing of species 0 complete
+2023-12-21 12:54:47 : Connected putative homologues
+2023-12-21 12:54:47 : Written final scores for species 1 to graph file
+2023-12-21 12:54:47 : Written final scores for species 0 to graph file
+2023-12-21 12:54:50 : Ran MCL
+
+Writing orthogroups to file
+---------------------------
+OrthoFinder assigned 25031 genes (83.2% of total) to 9445 orthogroups. Fifty percent of all genes were in orthogroups with 2 or more genes (G50 was 2) and were contained in the largest 4451 orthogroups (O50 was 4451). There were 8596 orthogroups with all species present and 7000 of these consisted entirely of single-copy genes.
+
+2023-12-21 12:55:16 : Done orthogroups
+
+Analysing Orthogroups
+=====================
+
+Calculating gene distances
+--------------------------
+2023-12-21 12:55:21 : Done
+2023-12-21 12:55:21 : Done 0 of 1041
+2023-12-21 12:55:21 : Done 100 of 1041
+2023-12-21 12:55:21 : Done 200 of 1041
+2023-12-21 12:55:21 : Done 300 of 1041
+2023-12-21 12:55:21 : Done 400 of 1041
+2023-12-21 12:55:21 : Done 500 of 1041
+2023-12-21 12:55:21 : Done 600 of 1041
+2023-12-21 12:55:21 : Done 700 of 1041
+2023-12-21 12:55:21 : Done 800 of 1041
+2023-12-21 12:55:21 : Done 900 of 1041
+
+Inferring gene and species trees
+--------------------------------
+
+Reconciling gene trees and species tree
+---------------------------------------
+2023-12-21 12:55:23 : Starting Recon and orthologues
+2023-12-21 12:55:23 : Starting OF Orthologues
+2023-12-21 12:55:23 : Done 0 of 1041
+2023-12-21 12:55:23 : Done 100 of 1041
+2023-12-21 12:55:23 : Done 200 of 1041
+2023-12-21 12:55:23 : Done 300 of 1041
+2023-12-21 12:55:23 : Done 400 of 1041
+2023-12-21 12:55:23 : Done 500 of 1041
+2023-12-21 12:55:23 : Done 600 of 1041
+2023-12-21 12:55:23 : Done 700 of 1041
+2023-12-21 12:55:23 : Done 800 of 1041
+2023-12-21 12:55:23 : Done 900 of 1041
+2023-12-21 12:55:23 : Done 1000 of 1041
+2023-12-21 12:55:24 : Done OF Orthologues
+
+Writing results files
+=====================
+2023-12-21 12:55:25 : Done orthologues
+
+Results:
+    /mnt/parscratch/users/bop20pp/Drive/ref_genome/helix/orthofinder/OrthoFinder/Results_Dec21_1/
+
+CITATION:
+ When publishing work that uses OrthoFinder please cite:
+ Emms D.M. & Kelly S. (2019), Genome Biology 20:238
+
+ If you use the species tree in your work then please also cite:
+ Emms D.M. & Kelly S. (2017), MBE 34(12): 3267-3278
+ Emms D.M. & Kelly S. (2018), bioRxiv https://doi.org/10.1101/267914

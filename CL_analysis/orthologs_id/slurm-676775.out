@@ -1,0 +1,28 @@
+
+OrthoFinder version 2.5.5 Copyright (C) 2014 David Emms
+
+2023-12-21 12:41:55 : Starting OrthoFinder 2.5.5
+64 thread(s) for highly parallel tasks (BLAST searches etc.)
+8 thread(s) for OrthoFinder algorithm
+
+Checking required programs are installed
+----------------------------------------
+Test can run "mcl -h" - ok
+Test can run "fastme -i /mnt/parscratch/users/bop20pp/Drive/ref_genome/helix/orthofinder/OrthoFinder/Results_Dec21_7/WorkingDirectory/dependencies/SimpleTest.phy -o /mnt/parscratch/users/bop20pp/Drive/ref_genome/helix/orthofinder/OrthoFinder/Results_Dec21_7/WorkingDirectory/dependencies/SimpleTest.tre" - ok
+
+Dividing up work for BLAST for parallel processing
+--------------------------------------------------
+2023-12-21 12:41:56 : Creating diamond database 1 of 2
+
+ERROR: external program called by OrthoFinder returned an error code: 1
+
+Command: diamond makedb --ignore-warnings --in /mnt/parscratch/users/bop20pp/Drive/ref_genome/helix/orthofinder/OrthoFinder/Results_Dec21_7/WorkingDirectory/Species0.fa -d /mnt/parscratch/users/bop20pp/Drive/ref_genome/helix/orthofinder/OrthoFinder/Results_Dec21_7/WorkingDirectory/diamondDBSpecies0
+
+stdout
+------
+b''
+stderr
+------
+b'diamond v2.0.13.151 (C) Max Planck Society for the Advancement of Science\nDocumentation, support and updates available at http://www.diamondsearch.org\nPlease cite: http://dx.doi.org/10.1038/s41592-021-01101-x Nature Methods (2021)\n\n#CPU threads: 64\nScoring parameters: (Matrix=BLOSUM62 Lambda=0.267 K=0.041 Penalties=11/1)\nDatabase input file: /mnt/parscratch/users/bop20pp/Drive/ref_genome/helix/orthofinder/OrthoFinder/Results_Dec21_7/WorkingDirectory/Species0.fa\nOpening the database file...  [0s]\nLoading sequences...  [0.028s]\nError: Error reading input stream at line 160062: Invalid character (:) in sequence\n'
+ERROR: diamond makedb failed
+ERROR: An error occurred, ***please review the error messages*** they may contain useful information about the problem.
