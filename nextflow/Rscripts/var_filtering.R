@@ -24,7 +24,7 @@ snp_summarise <- snp_info %>%
           altn = length(which(`READ-BASE` != `REF-BASE`)), 
           CHROM = `CHROM`[1], 
           ref = `REF-BASE`[1], 
-          alt = `READ-BASE`[1] %>% setdiff(.,ref),
+          alt = `READ-BASE`[1],
           alt = alt[1]) %>% 
   rename(pos = `REF-POS1`)
 

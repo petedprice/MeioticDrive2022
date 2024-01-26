@@ -20,6 +20,12 @@ include { R_var_filtering } from './modules/R_var_filtering.nf'
 include { contig_names } from './modules/contig_names.nf'
 include { split_bam } from './modules/split_bam.nf'
 
+include { ws_var_call_cleanup.nf } from './modules/ws_varcall/ws_var_call_cleanup.nf'
+include { ws_var_call_splitNCR.nf } from './modules/ws_varcall/ws_var_call_splitNCR.nf'
+include { ws_var_call_HC } from './modules/ws_varcall/ws_var_call_HC.nf'
+include { ws_var_call_VF_stringent } from './modules/ws_varcall/ws_var_call_VF_stringent.nf'
+include { ws_var_call_VF_relaxed } from './modules/ws_varcall/ws_var_call_VF_relaxed.nf'
+
 workflow {
     //Channels species name and reference name
     species_ch=Channel.fromPath(params.metadata)
@@ -65,8 +71,18 @@ workflow {
 		.view()
 
         splitted=split_bam(counted.combine(cns, by: 0))
-	var_called=sc_var_call(splitted.combine(species_ch, by: 0))
+	//var_called=sc_var_call(splitted.combine(species_ch, by: 0))
 	//var_filtered=R_var_filtering(var_called)
+	cleaned=ws_var_call_cleanup(counted)
+	splitNCRed=ws_var_call_splitNCR(cleaned.combine(species_ch, by: 0))
+	ws_VCed=ws_var_call_HC(splitNCRed)
+	VFs=ws_var_call_VF_stringent(ws_VCed)
+	VFr=ws_var_call_VF_relaxed(ws_VCed)
+	var_called_sc=sc_var_call(VFr)
+
+
+        
+
     }
 
 
