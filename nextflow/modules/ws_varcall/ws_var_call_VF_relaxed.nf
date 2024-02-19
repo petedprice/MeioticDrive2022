@@ -6,7 +6,7 @@ process ws_var_call_VF_relaxed {
     cpus { 4 * task.attempt }
     memory { 32.GB * task.attempt }
 
-    publishDir 'filtered_vcfs', mode: 'copy', overwrite: true, pattern: '*recode.vcf'
+    publishDir 'filtered_vcfs_relaxed', mode: 'copy', overwrite: true, pattern: '*recode.vcf'
 
     input:
     tuple val(species), val(sample), file("${sample}_dup_NCR.bam"), file("${sample}.g.vcf.gz"), val(ref)
@@ -24,8 +24,8 @@ process ws_var_call_VF_relaxed {
 	--gzvcf ${sample}.g.vcf.gz \
 	--out ${sample}_filt \
 	--minGQ 20 \
-	--minDP 10 \
-	--minQ 100 \
+	--minDP 4 \
+	--minQ 30 \
 	--recode \
 	--recode-INFO-all
 

@@ -17,31 +17,24 @@ process sc_var_call {
     tuple val(species), val(sample), file("${sample}_dup_NCR.bam"), file("${sample}_filt.recode.vcf"), val(ref)
 
     output:
-    tuple val(species), val(sample), file("${species}_${sample}_${contig}_fin_snp_read.txt.gz")
+    tuple val(species), val(sample), file("${species}_${sample}_fin_snp_read.txt.gz")
 
     """
     #!/bin/bash
-
+    cp ${sample}_filt.recode.vcf snps.vcf
+    gzip snps.vcf
     ref_genome=${params.fasta_dir}/${ref}.fna
 
     #Filter bam for only barcoded reads
-    samtools view -b -d CB -h -F 1024 -q 255 ${sample}_dup_NCR.bam > CB_subset.bam
+    samtools index ${sample}_dup_NCR.bam
+    samtools view -b -d CB -h -q 30 ${sample}_dup_NCR.bam > CB_subset.bam
     samtools index CB_subset.bam
 
-    #Run BCFTOOLS
-    bcftools mpileup --threads 1 -f \$ref_genome CB_subset.bam | \
-	bcftools call --threads 1 -mv -Ob | \
-	bcftools view --types snps \
-	-i 'INFO/DP >= 4' | \
-	gzip > snps.vcf.gz
-
     #RUN SAM2TSV
-    #java -jar ${projectDir}/software/jvarkit.ja sam2tsv -R \$ref_genome --regions snps.vcf.gz -N -o sam2tsv.tsv.gz CB_subset.bam
     java -jar /opt/jvarkit/dist/jvarkit.jar sam2tsv -R \$ref_genome --regions snps.vcf.gz -N -o sam2tsv.tsv.gz CB_subset.bam
 
     #GREP ALL SITES from bcftools in samttsv output to subset it
     zcat snps.vcf.gz | cut -f2 | egrep -v "^#"  | egrep -v POS > snps.txt
-    #zgrep -Ff snps.txt sam2tsv.tsv.gz  >  snps_sam2tsv.tsv
     awk 'NR==FNR{snps[\$1]; next} \$8 in snps' snps.txt <(zcat sam2tsv.tsv.gz) > snps_sam2tsv.tsv
     cat snps_sam2tsv.tsv | cut -f1 | uniq > uniq_reads.txt
 

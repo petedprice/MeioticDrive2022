@@ -24,10 +24,9 @@ snp_summarise <- snp_info %>%
           altn = length(which(`READ-BASE` != `REF-BASE`)), 
           CHROM = `CHROM`[1], 
           ref = `REF-BASE`[1], 
-          alt = `READ-BASE`[1],
-          alt = alt[1]) %>% 
+          alt = paste(unique(`READ-BASE`[`READ-BASE` != `REF-BASE`]), collapse = "/")) %>%
   rename(pos = `REF-POS1`)
 
 
-write.table(snp_summarise, file = gzfile(paste(args[2], args[3], "snp_summarise.txt.gz", sep = "_")), row.names = F, 
+write.table(snp_summarise, file = gzfile(paste(args[2], "snp_summarise.txt.gz", sep = "_")), row.names = F, 
 	col.names = F, quote = F)

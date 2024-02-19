@@ -8,15 +8,15 @@ process ws_var_call_HC {
     memory { 128.GB * task.attempt }
 
     input:
-    tuple val(species), val(sample), file("${sample}_dup_NCR.bam"), val(ref)
+    tuple val(species), val(sample), file(bam), val(ref)
 
     output:
-    tuple val(species), val(sample), file("${sample}_dup_NCR.bam"), file("${sample}.vcf.gz"), val(ref)
+    tuple val(species), val(sample), file(bam), file("${sample}.vcf.gz"), val(ref)
 
     script:
     """
     #!/bin/bash
-    gatk --java-options "-Xmx4g" HaplotypeCaller -R ${params.fasta_dir}/${ref}.fna -I ${sample}_dup_NCR.bam -O ${sample}.vcf.gz -ERC NONE
+    gatk --java-options "-Xmx4g" HaplotypeCaller -R ${params.fasta_dir}/${ref}.fna -I $bam -O ${sample}.vcf.gz -ERC NONE
     """
 }
 

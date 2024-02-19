@@ -31,6 +31,7 @@ process seurat_filter {
 	 metadata_ss.csv \
 	mt_genes.txt
     
+
     mv plots ${sample}_initial_QC_plots
 
     mv outdata/filtered_seurat.RData .

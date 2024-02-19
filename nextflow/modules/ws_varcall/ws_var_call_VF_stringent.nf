@@ -6,7 +6,7 @@ process ws_var_call_VF_stringent {
     cpus { 4 * task.attempt }
     memory { 32.GB * task.attempt }
 
-    publishDir 'filtered_vcfs', mode: 'copy', overwrite: true, pattern: '*recode.vcf'
+    publishDir 'filtered_vcfs_stringent', mode: 'copy', overwrite: true, pattern: '*recode.vcf'
 
     input:
     tuple val(species), val(sample), file("${sample}_dup_NCR.bam"), file("${sample}.g.vcf.gz"), val(ref)

@@ -67,7 +67,6 @@ merged_seurat@meta.data <- metadata #Save the more complete metadat to the seura
 filtered_seurat <- subset(x = merged_seurat, 
                             (log10GenesPerUMI > 0.8) & # Can be dying cells or simple cell types such as blood cells
                             (mitoRatio < 0.05))
-filtered_seurat <- merged_seurat
 metadata_clean <- filtered_seurat@meta.data
 
 outdatapath = paste(output_path, "/outdata", sep = "")

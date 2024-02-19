@@ -13,18 +13,29 @@ include { seurat_SCT_integrate_noX } from './modules/seurat/seurat_SCT_integrate
 
 include { seurat_markers } from './modules/seurat/seurat_markers.nf'
 include { seurat_markers_noX } from './modules/seurat/seurat_markers_noX.nf'
+include { seurat_get_clusters } from './modules/seurat/seurat_get_clusters.nf'
+include { seurat_get_barcodes } from './modules/seurat/seurat_get_barcodes.nf'
 
-
+include { get_samp } from './modules/get_samp.nf'
 include { sc_var_call } from './modules/sc_var_call.nf'
 include { R_var_filtering } from './modules/R_var_filtering.nf'
+include { clus_sc_var_call } from './modules/clus_sc_var_call.nf'
+include { clus_R_var_filtering } from './modules/clus_R_var_filtering.nf'
+
+
 include { contig_names } from './modules/contig_names.nf'
 include { split_bam } from './modules/split_bam.nf'
+include { split_bam_cluster } from './modules/split_bam_cluster.nf'
 
-include { ws_var_call_cleanup.nf } from './modules/ws_varcall/ws_var_call_cleanup.nf'
-include { ws_var_call_splitNCR.nf } from './modules/ws_varcall/ws_var_call_splitNCR.nf'
+
+include { ws_var_call_cleanup } from './modules/ws_varcall/ws_var_call_cleanup.nf'
+include { ws_var_call_splitNCR } from './modules/ws_varcall/ws_var_call_splitNCR.nf'
 include { ws_var_call_HC } from './modules/ws_varcall/ws_var_call_HC.nf'
 include { ws_var_call_VF_stringent } from './modules/ws_varcall/ws_var_call_VF_stringent.nf'
 include { ws_var_call_VF_relaxed } from './modules/ws_varcall/ws_var_call_VF_relaxed.nf'
+
+include { cluster_var_call_VF } from './modules/ws_varcall/cluster_var_call_VF.nf'
+include { cluster_var_call_HC } from './modules/ws_varcall/cluster_var_call_HC.nf'
 
 workflow {
     //Channels species name and reference name
@@ -66,25 +77,30 @@ workflow {
 
 
     if (params.sc_var_call == 'TRUE'){
-	cns=contig_names(species_ch)
-        	.transpose()
-		.view()
-
-        splitted=split_bam(counted.combine(cns, by: 0))
-	//var_called=sc_var_call(splitted.combine(species_ch, by: 0))
-	//var_filtered=R_var_filtering(var_called)
 	cleaned=ws_var_call_cleanup(counted)
 	splitNCRed=ws_var_call_splitNCR(cleaned.combine(species_ch, by: 0))
 	ws_VCed=ws_var_call_HC(splitNCRed)
 	VFs=ws_var_call_VF_stringent(ws_VCed)
 	VFr=ws_var_call_VF_relaxed(ws_VCed)
 	var_called_sc=sc_var_call(VFr)
-
-
-        
-
+	var_filtered_sc=R_var_filtering(var_called_sc)
     }
 
+    if (params.clus_var_call == 'TRUE'){
+	bc_clusters=seurat_get_barcodes(seurat_integrated)
+	.flatten()
+
+	got_samp=get_samp(bc_clusters)
+		.combine(splitNCRed, by:1)
+
+        split_clust=split_bam_cluster(got_samp)
+	clus_HCed=cluster_var_call_HC(split_clust)
+	clus_VFed=cluster_var_call_VF(clus_HCed)
+	//clus_var_called_sc=clus_sc_var_call(clus_VFed)
+        //clus_var_filtered_sc=clus_R_var_filtering(clus_var_called_sc)
+
+
+    }
 
 
 
