@@ -28,13 +28,9 @@ To do
 Clustering and cluster number
 -----------------------------
 
--   Number of dimensions/PCAs
+-   Number of dimensions/PCAs: Use an elbow plot to determine where the majority of variation is explained/less variation is being explained by the inclusion of each subsequent dimension. This defines the shape of your final UMAP (it is based of the first x PCA dimensions)
 
--   Use an elbow plot to determine where the majority of variation is explained/less variation is being explained by the inclusion of each subsequent dimension. This defines the shape of your final UMAP (it is based of the first x PCA dimensions)
-
--   Resolution:  
-
-*-   Determines the granularity of the final number of clusters
+-   Resolution: Determines the granularity of the final number of clusters
 
 ![](https://lh7-us.googleusercontent.com/zMXV9g6C1TU15BG8LkXGh5GWozO2Iq1azwlssM1MyDxu4rZqeDB2O5LtNlcKlEkeC0tG8jskNKjxAI0zf6X5xjwL_0DhJRFyzgEmuH9jbr1UeDvEz9Zy3MCGzIg1pf5NkRZ-vhGXiLLj4OpuD19FyF4)
 
