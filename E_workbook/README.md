@@ -1,7 +1,7 @@
 FILTERING THRESHOLDS 
 =====================
 
-![](https://lh7-us.googleusercontent.com/b8OYdYwIv3pXCsH-eW9nnbcySLjzvv-WksGui7g4q7wMNDp9F0Bqqr1tMRvRTZP38PNF68ndXshhjcIxi0yLF_OY77LcqeThSykKQUAlKH2B2YRBiJ5YpSZPrykUpvj2tzf5jBfpJLxfjSIsTiwxTMM)
+![]([https://lh7-us.googleusercontent.com/b8OYdYwIv3pXCsH-eW9nnbcySLjzvv-WksGui7g4q7wMNDp9F0Bqqr1tMRvRTZP38PNF68ndXshhjcIxi0yLF_OY77LcqeThSykKQUAlKH2B2YRBiJ5YpSZPrykUpvj2tzf5jBfpJLxfjSIsTiwxTMM](https://github.com/petedprice/MeioticDrive2022/blob/main/E_workbook/photos/magp_arranged.pdf))
 
 ![](https://lh7-us.googleusercontent.com/XWbi8Ebjq7kOU2JLLA7TIB4qPjhAw2GNroOmnml4QZbapemkLQMUCQQd96p_Rc3dZ4pjJFb3h7hBiztAr9_B7V3VjvGPkqWUxtAk5CpivztWB-fUc1Qs4RlCsXHGKHUpLkcnduKNICMx2AXkTDYRpmE)
 
