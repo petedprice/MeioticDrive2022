@@ -57,11 +57,15 @@ Approach for identifying markers 
 
 -   First broad groupings including Cyst, GSC, Spermatagonia, Spermatocyte, Spermatid
 
-Dotplots of marker expression grouped by a) Broad groupings (Key: GSC:Germline Stem Cell, G:Spermatogonia E1:Early Primary Spermatocytes M1:Middle Primary Spermatoctyes, L1:Late Primary Spermatocytes, SS:Secondary Spermatocyte, EST:Early Spermatid, LST:Late Spermatid C:Cyst C1-4:Cyst Cell Lineage 1-4, T:Terminal Epithelial Precursors, P:Pigment Cell Precursors, H:Hub, E:Epithelial, AC:Accessory Gland) and b) Narrow groupings (G:GSC/Spermatagonia, PS: Primary Spermatocyte, SS: Secondary Spermatocyte, ST:Spermatid, C:Cyst E:Epithelial, H:Hub, AC:Accesory Gland). Based on Witt papers, key markers to look at may be twe, vas/vasa
+Dotplots of marker expression grouped by specificity. 
+High) groupings (Key: GSC:Germline Stem Cell, G:Spermatogonia E1:Early Primary Spermatocytes M1:Middle Primary Spermatoctyes, L1:Late Primary Spermatocytes, SS:Secondary Spermatocyte, EST:Early Spermatid, LST:Late Spermatid C:Cyst C1-4:Cyst Cell Lineage 1-4, T:Terminal Epithelial Precursors, P:Pigment Cell Precursors, H:Hub, E:Epithelial, AC:Accessory Gland) and 
 
-twe discerns spermatids from spermatocytes
+Medium) (G:GSC/Spermatagonia, PS: Primary Spermatocyte, SS: Secondary Spermatocyte, ST:Spermatid, C:Cyst E:Epithelial, H:Hub, AC:Accesory Gland).
 
-vas/vasa denotes the start of spermatogenesis
+Low)
+
+Based on Witt papers, key markers to look at may be twe (discerns spermatids from spermatocytes) and vas/vasa (denotes the start of spermatogenesis)
+
 
 **Specificity**
 High
