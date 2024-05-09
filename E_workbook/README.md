@@ -34,7 +34,7 @@ Clustering and cluster number
 
 -   Resolution:  
 
--   Determines the granularity of the final number of clusters
+*-   Determines the granularity of the final number of clusters
 
 ![](https://lh7-us.googleusercontent.com/zMXV9g6C1TU15BG8LkXGh5GWozO2Iq1azwlssM1MyDxu4rZqeDB2O5LtNlcKlEkeC0tG8jskNKjxAI0zf6X5xjwL_0DhJRFyzgEmuH9jbr1UeDvEz9Zy3MCGzIg1pf5NkRZ-vhGXiLLj4OpuD19FyF4)
 
