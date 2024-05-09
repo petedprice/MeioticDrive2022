@@ -82,6 +82,7 @@ Low
 
 
 **Extra data for celltype ID**
+Expectations are for number of features expressed across spermatogenesis to reduce and likewise see X-chromosome inactivation
 
 Barplots of feature and UMI expresssion
 ![](./photos/no_genes_plots.png)
