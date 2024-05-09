@@ -1,7 +1,7 @@
 FILTERING THRESHOLDS 
 =====================
 
-![](https://github.com/petedprice/MeioticDrive2022/blob/main/E_workbook/photos/magp_arranged.pdf)
+![](./photos/magp_arranged.pdf)
 
 ![](https://github.com/petedprice/MeioticDrive2022/blob/main/E_workbook/photos/cell_numbers.pdf)
 
