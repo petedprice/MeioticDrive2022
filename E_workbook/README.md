@@ -1,9 +1,9 @@
 FILTERING THRESHOLDS 
 =====================
 
-![plot](./photos/magp_arranged.pdf)
+![plot](./photos/magp_arranged.png)
 
-![](https://github.com/petedprice/MeioticDrive2022/blob/main/E_workbook/photos/cell_numbers.pdf)
+![plot](./photos/cell_numbers.png)
 
 Final thresholds to use. 
 
@@ -32,7 +32,7 @@ Clustering and cluster number
 
 -   Resolution: Determines the granularity of the final number of clusters
 
-![](https://github.com/petedprice/MeioticDrive2022/blob/main/E_workbook/photos/clustering_plots.pdf)
+![plot](./photos/clustering_plots.png)
 
 Elbow plot levels at around 20PCAs and when looking at variation explained it's at PCA 21 so 21 PCs is taken forward for UMAP/clustering etc.
 
