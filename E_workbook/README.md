@@ -63,11 +63,16 @@ twe discerns spermatids from spermatocytes
 
 vas/vasa denotes the start of spermatogenesis
 
-![](https://lh7-us.googleusercontent.com/34e_vyXgmCGoJFpY0koa0_7cddH9brPyVIM9GDhiC0ejWROV4mvxtL3F6eQzXxpe0dDQfNXsN5T3gl7KzdhlpjPy8HEonV_BlsEFVtoWplNpNDZdYNPu6KXYcedwTxlDaG4Tg2NJ2-ZVH0mXXD-IQPk)
+**Specificity**
+High
+![](./photos/Consensus_Marker_tdal_markers_dotplot_clus.png)
 
-![](https://lh7-us.googleusercontent.com/QQSPpd8I78vQm1UtlpNHHDL0gOqkr-KJf6SMNmRcbFioOjF59afWcbswaW2bIdZaR_Z6vPqggqDytMZf9Yzjqd4WnEPCiOG9-QwJgc30nDa0ZqqOv1pjPceLZ4sR_NFn7TIFvqzPQ0e3b4rZ45SaJtA)
+Medium
+![](./photos/Medium_Group_tdal_markers_dotplot_clus.png)
 
-![](https://lh7-us.googleusercontent.com/iQ__Zp6dsxPiF7btgdLh_8l0EYQURhDiEg5b6RoBSUA1Jh6Uu5uzuu0g1Ot3NALjEo_A_ie1BKyoTs6KqMOkaKWw5w9HXFBogapxym6D7BQCIoK4__aUMEFlADRh0MWNPgiGbF4pefGEvpsm7fxQ5xc)
+Low
+![](./photos/Broad_Group_tdal_markers_dotplot_clus.png)
+![](./photos/)
 
 METHODS
 =======
