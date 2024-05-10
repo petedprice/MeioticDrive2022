@@ -1,17 +1,24 @@
 FILTERING THRESHOLDS 
 =====================
 
+Filters
+-------
+
+- Mitofilter: remove cells with higher mitochondrial expression than the filter, e.g 0.5, remove if more than 50% of transcripts are of mitochondrial origin
+- Feature filter: remove cells that are expressing less than this number of features/genes
+- Complexity filter: ratio of features per transcript. Low-complexity cells are often dying however this is variable and dependent on the biology of your sample
+
 ![plot](./photos/magp_arranged.png)
 
 ![plot](./photos/cell_numbers.png)
 
 Final thresholds to use. 
 
--   Mitofilter 20% because clear cluster of cells with both high mitochondrial (cluster 6) that has also has low complexity. 5% removes lots of cells outside the distribution so appears to stringent. We also may expect high energetic output of the testis in general 
+-   Mitofilter 20% because clear cluster of cells with both high mitochondrial (cluster 6) that has also has low complexity. 5% removes lots of cells outside the distribution and so appears to be stringent. We also may expect high energetic output of the testis in general 
 
--   No complexity filter as mitochondrial appears to capture dying cells. ALso temporal patterns of number of genes expressed across spermatogensis (lots early on and few late on). This doesn't appear to be a standard filter
+-   No complexity filter as mitochondrial appears to capture dying cells. Also temporal patterns of number of genes expressed across spermatogenesis (lots early on and few late on). This doesn't appear to be a standard filter
 
--   No upperthreshold on nfeatures as doubletfinder but lower threshold of 200 (the done thing across the literature)
+-   No upper threshold on nfeatures but use the lower threshold of 200 (the done thing across the literature)
 
 Google sheet for filtering thresholds in literature: 
 
@@ -34,9 +41,9 @@ Clustering and cluster number
 
 ![plot](./photos/clustering_plots.png)
 
-Elbow plot levels at around 20PCAs and when looking at variation explained it's at PCA 21 so 21 PCs is taken forward for UMAP/clustering etc.
+Elbow plot levels at around 20PCAs and when looking at the variation explained it's at PCA 21 so 21 PCs are taken forward for UMAP/clustering etc.
 
-No obvious point where clustering number flatterns with resolution so choose based on biological interest, can condense clusters later. Resolution of 0.5 used as slope flattens a bit and gives a freedom to condense.
+There is no obvious point where the clustering number flattens with resolution so choice based on biological interest, can condense clusters later. Resolution of 0.5 used as slope flattens a bit and gives a freedom to condense.
 
 Celltype ID
 -----------
@@ -53,18 +60,18 @@ Approach for identifying markers 
 
 -   Initial orthology check: OMA results in annotation and orthogroup information 
 
--   Double check: blast, align and build trees for all hits within orthogroup/OMA
+-   Double-check: blast, align and build trees for all hits within orthogroup/OMA
 
 -   First broad groupings including Cyst, GSC, Spermatagonia, Spermatocyte, Spermatid
 
 Dotplots of marker expression grouped by specificity. 
-High) groupings KEY: GSC:Germline Stem Cell, G:Spermatogonia E1:Early Primary Spermatocytes M1:Middle Primary Spermatoctyes, L1:Late Primary Spermatocytes, SS:Secondary Spermatocyte, EST:Early Spermatid, LST:Late Spermatid C:Cyst C1-4:Cyst Cell Lineage 1-4, T:Terminal Epithelial Precursors, P:Pigment Cell Precursors, H:Hub, E:Epithelial, AC:Accessory Gland) and 
+High) groupings KEY: GSC: Germline Stem Cell, G: Spermatogonia E1:Early Primary Spermatocytes M1:Middle Primary Spermatoctyes, L1:Late Primary Spermatocytes, SS: Secondary Spermatocyte, EST: Early Spermatid, LST: Late Spermatid C:Cyst C1-4:Cyst Cell Lineage 1-4, T: Terminal Epithelial Precursors, P: Pigment Cell Precursors, H: Hub, E: Epithelial, AC: Accessory Gland) and 
 
-Medium) KEY G:GSC/Spermatagonia, PS: Primary Spermatocyte, SS: Secondary Spermatocyte, ST:Spermatid, C:Cyst E:Epithelial, H:Hub, AC:Accesory Gland).
+Medium) KEY G: GSC/Spermatagonia, PS: Primary Spermatocyte, SS: Secondary Spermatocyte, ST: Spermatid, C: Cyst E: Epithelial, H: Hub, AC: Accessory Gland).
 
-Low) groupings KEY: G:GSC/Spermatagonia, S: Spermatocyte, ST:Spermatid, C:Cyst E:Epithelial, H:Hub, AC:Accesory Gland).
+Low) groupings KEY: G:GSC/Spermatagonia, S: Spermatocyte, ST: Spermatid, C: Cyst E: Epithelial, H: Hub, AC: Accessory Gland).
 
-Based on Witt papers, key markers to look at may be twe (discerns spermatids from spermatocytes) and vas/vasa (denotes the start of spermatogenesis)
+Based on Witt papers, key markers to look at maybe twe (discerns spermatids from spermatocytes) and vas/vasa (denotes the start of spermatogenesis)
 
 
 **Specificity**
