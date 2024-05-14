@@ -98,8 +98,8 @@ Based on marker expression the following assignments have been made
 |4|SR-specific/NA|NA|No obvious marker expression, low-feature/high complexity|
 |5|Cyst|Cyst|Expresses suite of Cyst markers, not clear which cyst type|
 |6|SR-specific/NA|NA||
-|7|Early Spermatid|Spermatid|Similar expression in general to spermatocytes but do not express twe so not spermatocytes. Has closer expression to spermatocytes than 8 so maybe earlier stage|
-|8|Late Spermatid|Spermatid|Similar expression in general to spermatocytes but do not express twe so not spermatocytes|
+|7|Early Spermatid|Spermatid|Similar expression in general to spermatocytes but do not express twe so not spermatocytes. Has closer expression to spermatocytes than 8 so maybe earlier stage. Also reduced number of expressed genes|
+|8|Late Spermatid|Spermatid|Similar expression in general to spermatocytes but do not express twe so not spermatocytes. Also reduced number of expressed genes|
 |9|Cyst|Cyst|Expresses suite of Cyst markers, not clear which cyst type|
 |10|Cyst|Cyst|Expresses suite of Cyst markers, not clear which cyst type|
 |11|Cyst|Cyst|Expresses suite of Cyst markers, not clear which cyst type|
@@ -108,7 +108,7 @@ Based on marker expression the following assignments have been made
 |14|Spermatocyte|Spermatocytes|Unclear primary or secondary|
 |15|NA|NA|Some cyst markers and close in space but very low expression|
 |16|NA|NA|Some cyst markers and close in space but very low expression|
-|17|Spermatocyte|Secondary Spermatocyte||
+|17|Spermatocyte|Secondary Spermatocyte|Number of features expressed starts to drop off at this point in keeping with [Witt et al. (2019)](https://iiif.elifesciences.org/lax/47138%2Felife-47138-fig2-v1.tif/full/1500,/0/default.jpg)|
 |18|NA|NA|Some cyst markers and close in space but very low expression|
 |19|NA|NA|May be muscle but no markers for muscle used|
 
