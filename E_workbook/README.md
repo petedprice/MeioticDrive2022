@@ -85,8 +85,32 @@ Medium
 Low
 ![](./photos/Broad_Group_tdal_markers_dotplot_clus.png)
 
+**Cluster Assignment**
 
+Based on marker expression the following assignments have been made 
 
+|Cluster|Celltype Specific| Celltype Narrow | Logic| 
+|---|---|---|---|
+|0|GSC/G|GSC/G|Express suite of GSC/G genes with strong vas expression (start of spermatogenesis)|
+|1|GSC/G|GSC/G|Express suite of GSC/G genes with strong vas expression (start of spermatogenesis)|
+|2|SR-specific/NA|NA| No obvious marker expression, low-feature/high complexity|
+|3|Cyst|Cyst|Expresses suite of Cyst markers, not clear which cyst type|
+|4|SR-specific/NA|NA|No obvious marker expression, low-feature/high complexity|
+|5|Cyst|Cyst|Expresses suite of Cyst markers, not clear which cyst type|
+|6|SR-specific/NA|NA||
+|7|Early Spermatid|Spermatid|Similar expression in general to spermatocytes but do not express twe so not spermatocytes. Has closer expression to spermatocytes than 8 so maybe earlier stage|
+|8|Late Spermatid|Spermatid|Similar expression in general to spermatocytes but do not express twe so not spermatocytes|
+|9|Cyst|Cyst|Expresses suite of Cyst markers, not clear which cyst type|
+|10|Cyst|Cyst|Expresses suite of Cyst markers, not clear which cyst type|
+|11|Cyst|Cyst|Expresses suite of Cyst markers, not clear which cyst type|
+|12|NA|NA|Some cyst markers and close in space but very low expression|
+|13|Primary spermatocyte|Spermatocyte|Also expresses cyst markers but cyst doesn't express PS markers|
+|14|Spermatocyte|Spermatocytes|Unclear primary or secondary|
+|15|NA|NA|Some cyst markers and close in space but very low expression|
+|16|NA|NA|Some cyst markers and close in space but very low expression|
+|17|Spermatocyte|Secondary Spermatocyte||
+|18|NA|NA|Some cyst markers and close in space but very low expression|
+|19|NA|NA|May be muscle but no markers for muscle used|
 
 **Extra data for celltype ID**
 Expectations are for number of features expressed across spermatogenesis to reduce and likewise see X-chromosome inactivation
